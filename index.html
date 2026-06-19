@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🚵 Les Gets 2026 – MTB Trip</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
 
@@ -905,29 +907,8 @@
       </div>
     </div>
 
-    <h2 class="section-title" style="margin-top: 2rem;">🍺 Bars & Après</h2>
-    <div class="link-grid">
-      <a class="link-card" href="https://maps.google.com/?q=Bar+Bush+Les+Gets" target="_blank">
-        <div class="link-emoji">🍻</div>
-        <h3>Bar Bush</h3>
-        <p>The go-to après bar for mountain bikers. Live music, cold beers, great vibes.</p>
-      </a>
-      <a class="link-card" href="https://maps.google.com/?q=L'Igloo+Bar+Les+Gets" target="_blank">
-        <div class="link-emoji">🧊</div>
-        <h3>L'Igloo Bar</h3>
-        <p>Classic après-ski/bike bar right in the village center. Good cocktails.</p>
-      </a>
-      <a class="link-card" href="https://maps.google.com/?q=Le+Boomerang+Les+Gets" target="_blank">
-        <div class="link-emoji">🎵</div>
-        <h3>Le Boomerang</h3>
-        <p>Fun pub atmosphere with billiards, big screens, and a solid beer selection.</p>
-      </a>
-      <a class="link-card" href="https://maps.google.com/?q=Black+Bear+Brewery+Les+Gets" target="_blank">
-        <div class="link-emoji">🐻</div>
-        <h3>Black Bear Brewery</h3>
-        <p>Local craft brewery with unique Alpine-inspired beers. Worth a visit!</p>
-      </a>
-    </div>
+    <h2 class="section-title" style="margin-top: 2rem;">📍 Restaurant Map</h2>
+    <div id="resto-map" style="height: 400px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); z-index: 1;"></div>
   </div>
 
   <!-- USEFUL LINKS TAB -->
@@ -1285,6 +1266,52 @@
         grid.innerHTML = '<div class="weather-loading">⚠️ Weather data not yet available (forecasts show ~7 days ahead). <a href="https://www.mountain-forecast.com/peaks/Les-Gets/forecasts/1172" target="_blank" style="color:white;text-decoration:underline;">Check manually →</a></div>';
       }
     }
+
+    // Restaurant map (Leaflet + OpenStreetMap)
+    const restoMap = L.map('resto-map').setView([46.1580, 6.6690], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19,
+    }).addTo(restoMap);
+
+    const restoIcon = L.divIcon({
+      html: '<div style="font-size:1.6rem;text-shadow:1px 1px 2px rgba(0,0,0,0.4);">📍</div>',
+      iconSize: [28, 36],
+      iconAnchor: [14, 36],
+      popupAnchor: [0, -32],
+      className: '',
+    });
+
+    const restaurants = [
+      { name: "La R'mize", price: "€25–45", rating: "⭐ 4.8", lat: 46.1610, lng: 6.6695 },
+      { name: "L'Aprèski Bar & Resto", price: "€20–40", rating: "⭐ 4.6", lat: 46.1575, lng: 6.6660 },
+      { name: "Vina Annapurna", price: "€25–45", rating: "⭐ 4.6", lat: 46.1583, lng: 6.6700 },
+      { name: "Brasserie Du Centre", price: "€20–40", rating: "⭐ 4.6", lat: 46.1580, lng: 6.6688 },
+      { name: "Les Durs à Cuire", price: "€25–45", rating: "⭐ 4.6", lat: 46.1572, lng: 6.6720 },
+      { name: "Les Copeaux", price: "€25–50", rating: "⭐ 4.5", lat: 46.1578, lng: 6.6675 },
+      { name: "Le Vaffieu", price: "€25–45", rating: "⭐ 4.5", lat: 46.1555, lng: 6.6650 },
+      { name: "Le Boomerang", price: "€18–35", rating: "⭐ 4.5", lat: 46.1585, lng: 6.6682 },
+      { name: "Le George", price: "€20–40", rating: "⭐ 4.4", lat: 46.1582, lng: 6.6693 },
+      { name: "Pizzalino", price: "€15–30", rating: "⭐ 4.3", lat: 46.1581, lng: 6.6685 },
+      { name: "La Biskatcha", price: "€20–48", rating: "⭐ 4.3", lat: 46.1577, lng: 6.6697 },
+      { name: "L'As des Neiges & Le Comptoir", price: "€20–40", rating: "⭐ 4.2", lat: 46.1579, lng: 6.6670 },
+      { name: "Le Tyrol", price: "€20–40", rating: "⭐ 4.2", lat: 46.1576, lng: 6.6705 },
+    ];
+
+    restaurants.forEach(r => {
+      L.marker([r.lat, r.lng], { icon: restoIcon })
+        .addTo(restoMap)
+        .bindPopup(`<strong>${r.name}</strong><br>${r.rating}<br>${r.price}`);
+    });
+
+    // Fix map rendering when tab becomes visible
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.tab === 'restaurants') {
+          setTimeout(() => restoMap.invalidateSize(), 100);
+        }
+      });
+    });
 
     loadWeather();
   </script>

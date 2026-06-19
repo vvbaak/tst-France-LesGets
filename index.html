@@ -262,6 +262,73 @@
     .link-card h3 { color: var(--forest); margin-bottom: 0.3rem; font-size: 1rem; }
     .link-card p { font-size: 0.85rem; color: var(--rock); line-height: 1.4; }
 
+    /* Restaurant cards */
+    .resto-card {
+      background: var(--snow);
+      border-radius: 16px;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .resto-card:hover { transform: translateY(-2px); }
+    .resto-header {
+      padding: 0.8rem 1.2rem;
+      background: linear-gradient(135deg, var(--forest), var(--moss));
+      color: var(--snow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .resto-header h3 { font-size: 1.05rem; font-weight: 600; margin: 0; }
+    .resto-header .resto-price {
+      background: rgba(255,255,255,0.2);
+      padding: 0.15rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .resto-body { padding: 0.8rem 1.2rem; }
+    .resto-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      font-size: 0.85rem;
+      color: var(--rock);
+      margin-bottom: 0.5rem;
+    }
+    .resto-meta span { display: flex; align-items: center; gap: 0.25rem; }
+    .resto-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.5rem; }
+    .resto-tag {
+      background: var(--sand);
+      color: var(--earth-dark);
+      padding: 0.15rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .resto-booking {
+      font-size: 0.82rem;
+      color: var(--rock);
+      border-top: 1px solid var(--sand);
+      padding-top: 0.5rem;
+      margin-top: 0.3rem;
+    }
+    .resto-booking a { color: var(--moss); text-decoration: none; font-weight: 500; }
+    .resto-booking a:hover { text-decoration: underline; }
+    .resto-demand {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 8px;
+      margin-left: 0.3rem;
+    }
+    .demand-high { background: #fde8e8; color: #c0392b; }
+    .demand-med { background: #fef3e2; color: #e67e22; }
+    .demand-low { background: #e8f5e9; color: #27ae60; }
+
     .section-title {
       font-size: 1.3rem;
       font-weight: 700;
@@ -574,32 +641,268 @@
   <!-- RESTAURANTS TAB -->
   <div id="restaurants" class="tab-content">
     <h2 class="section-title">🍽️ Restaurants</h2>
-    <div class="link-grid">
-      <a class="link-card" href="https://www.tripadvisor.com/Restaurant_Review-g580102-d1027097-Reviews-Le_Vaffieu-Les_Gets_Haute_Savoie_Auvergne_Rhone_Alpes.html" target="_blank">
-        <div class="link-emoji">🥩</div>
-        <h3>Le Vaffieu</h3>
-        <p>Traditional Savoyard cuisine with local specialties. Great for a hearty dinner after riding.</p>
-      </a>
-      <a class="link-card" href="https://www.tripadvisor.com/Restaurant_Review-g580102-d2388134-Reviews-La_Paika-Les_Gets_Haute_Savoie_Auvergne_Rhone_Alpes.html" target="_blank">
-        <div class="link-emoji">🍕</div>
-        <h3>La Païka</h3>
-        <p>Popular spot with pizzas, burgers, and a lively atmosphere. Biker-friendly.</p>
-      </a>
-      <a class="link-card" href="https://www.tripadvisor.com/Restaurant_Review-g580102-d3813207-Reviews-Le_Tyrol-Les_Gets_Haute_Savoie_Auvergne_Rhone_Alpes.html" target="_blank">
-        <div class="link-emoji">🧀</div>
-        <h3>Le Tyrol</h3>
-        <p>Fondue and raclette heaven. A must for a classic Alpine dining experience.</p>
-      </a>
-      <a class="link-card" href="https://www.tripadvisor.com/Restaurant_Review-g580102-d10347920-Reviews-Le_Fruitier-Les_Gets_Haute_Savoie_Auvergne_Rhone_Alpes.html" target="_blank">
-        <div class="link-emoji">🍷</div>
-        <h3>Le Fruitier</h3>
-        <p>Fine dining in Les Gets with excellent local wines and seasonal menus.</p>
-      </a>
-      <a class="link-card" href="https://maps.google.com/?q=Brasserie+de+la+Turche+Les+Gets" target="_blank">
-        <div class="link-emoji">🍔</div>
-        <h3>Brasserie de la Turche</h3>
-        <p>Casual brasserie with burgers, salads, and local beers. Great terrace.</p>
-      </a>
+
+    <!-- La R'mize -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🥇 La R'mize</h3>
+        <span class="resto-price">€25 – €45</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-meta">
+          <span>⭐ 4.8 Google (499)</span>
+          <span>⭐ 4.8 TripAdvisor (499)</span>
+          <span>🚶 6–8 min</span>
+        </div>
+        <div class="resto-tags">
+          <span class="resto-tag">French</span>
+          <span class="resto-tag">Alpine</span>
+        </div>
+        <div class="resto-booking">📞 Call or book via website <span class="resto-demand demand-high">HIGH DEMAND</span></div>
+      </div>
+    </div>
+
+    <!-- L'Aprèski Bar & Resto -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍷 L'Aprèski Bar & Resto</h3>
+        <span class="resto-price">€20 – €40</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-meta">
+          <span>⭐ 4.6 Google (390+)</span>
+          <span>⭐ 4.6 TripAdvisor (391)</span>
+          <span>🚶 4–6 min</span>
+        </div>
+        <div class="resto-tags">
+          <span class="resto-tag">French</span>
+          <span class="resto-tag">Casual</span>
+        </div>
+        <div class="resto-booking">📞 Phone or walk-in early <span class="resto-demand demand-med">MED–HIGH</span></div>
+      </div>
+    </div>
+
+    <!-- Vina Annapurna -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍽️ Vina Annapurna</h3>
+        <span class="resto-price">€25 – €45</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-meta">
+          <span>⭐ 4.6 Google (267)</span>
+          <span>⭐ 4.6 TripAdvisor (267)</span>
+          <span>🚶 3–5 min</span>
+        </div>
+        <div class="resto-tags">
+          <span class="resto-tag">Modern French</span>
+        </div>
+        <div class="resto-booking">🌐 Reserve online or 📞 phone <span class="resto-demand demand-med">MED–HIGH</span></div>
+      </div>
+    </div>
+
+    <!-- Brasserie Du Centre -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍕 Brasserie Du Centre</h3>
+        <span class="resto-price">€20 – €40</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-meta">
+          <span>⭐ 4.6 Google (520+)</span>
+          <span>⭐ 4.5 TripAdvisor (180+)</span>
+          <span>🚶 1 min</span>
+        </div>
+        <div class="resto-tags">
+          <span class="resto-tag">Pizza</span>
+          <span class="resto-tag">Burgers</span>
+          <span class="resto-tag">French / Alpine</span>
+        </div>
+        <div class="resto-booking">📞 <a href="tel:+33450798708">+33 4 50 79 87 08</a> / Walk-in <span class="resto-demand demand-low">LOW</span></div>
+      </div>
+    </div>
+
+    <!-- Les Durs à Cuire -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🥩 Les Durs à Cuire</h3>
+        <span class="resto-price">€25 – €45</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-meta">
+          <span>⭐ 4.6 Google (210+)</span>
+          <span>⭐ 4.5 TripAdvisor (95+)</span>
+          <span>🚶 4 min</span>
+        </div>
+        <div class="resto-tags">
+          <span class="resto-tag">Burgers</span>
+          <span class="resto-tag">BBQ / Meats</span>
+          <span class="resto-tag">French</span>
+        </div>
+        <div class="resto-booking">📞 <a href="tel:+33951782509">+33 9 51 78 25 09</a></div>
+      </div>
+    </div>
+
+    <!-- Les Copeaux -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🧀 Les Copeaux</h3>
+        <span class="resto-price">€25 – €50</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-meta">
+          <span>⭐ 4.5 Google (640+)</span>
+          <span>⭐ 4.5 TripAdvisor (410+)</span>
+          <span>🚶 2–4 min</span>
+        </div>
+        <div class="resto-tags">
+          <span class="resto-tag">French</span>
+          <span class="resto-tag">Traditional Alpine</span>
+          <span class="resto-tag">Fondue</span>
+        </div>
+        <div class="resto-booking">🌐 Website / 📞 <a href="tel:+33450797850">+33 4 50 79 78 50</a> <span class="resto-demand demand-high">HIGH – MUST BOOK</span></div>
+      </div>
+    </div>
+
+    <!-- Le Vaffieu -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🏔️ Le Vaffieu</h3>
+        <span class="resto-price">€25 – €45</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-meta">
+          <span>⭐ 4.5 Google (300+)</span>
+          <span>⭐ 4.5 TripAdvisor (316)</span>
+          <span>🚶 7–10 min</span>
+        </div>
+        <div class="resto-tags">
+          <span class="resto-tag">Alpine Comfort</span>
+        </div>
+        <div class="resto-booking">📞 Phone reservation <span class="resto-demand demand-med">MED</span></div>
+      </div>
+    </div>
+
+    <!-- Le Boomerang -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍔 Le Boomerang</h3>
+        <span class="resto-price">€18 – €35</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-meta">
+          <span>⭐ 4.5 Google (310+)</span>
+          <span>⭐ 4.0 TripAdvisor (140+)</span>
+          <span>🚶 3 min</span>
+        </div>
+        <div class="resto-tags">
+          <span class="resto-tag">Burgers</span>
+          <span class="resto-tag">Casual</span>
+          <span class="resto-tag">International</span>
+        </div>
+        <div class="resto-booking">Walk-in / 📞 <a href="tel:+33646518205">+33 6 46 51 82 05</a> <span class="resto-demand demand-low">LOW</span></div>
+      </div>
+    </div>
+
+    <!-- Le George -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍷 Le George</h3>
+        <span class="resto-price">€20 – €40</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-meta">
+          <span>⭐ 4.4 Google (184)</span>
+          <span>⭐ 4.4 TripAdvisor (184)</span>
+          <span>🚶 2–3 min</span>
+        </div>
+        <div class="resto-tags">
+          <span class="resto-tag">French</span>
+          <span class="resto-tag">Wine Bar</span>
+        </div>
+        <div class="resto-booking">Walk-in <span class="resto-demand demand-low">LOW–MED</span></div>
+      </div>
+    </div>
+
+    <!-- Pizzalino -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍕 Pizzalino</h3>
+        <span class="resto-price">€15 – €30</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-meta">
+          <span>⭐ 4.3 Google (200+)</span>
+          <span>⭐ 4.0 TripAdvisor (47)</span>
+          <span>🚶 1–2 min</span>
+        </div>
+        <div class="resto-tags">
+          <span class="resto-tag">Pizza</span>
+        </div>
+        <div class="resto-booking">Walk-in <span class="resto-demand demand-low">LOW</span></div>
+      </div>
+    </div>
+
+    <!-- La Biskatcha -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🔥 La Biskatcha</h3>
+        <span class="resto-price">€20 – €48</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-meta">
+          <span>⭐ 4.3 Google (340+)</span>
+          <span>⭐ 4.0 TripAdvisor (220+)</span>
+          <span>🚶 2–3 min</span>
+        </div>
+        <div class="resto-tags">
+          <span class="resto-tag">BBQ</span>
+          <span class="resto-tag">Grilled Meats</span>
+          <span class="resto-tag">Alpine</span>
+        </div>
+        <div class="resto-booking">🌐 Website / 📞 <a href="tel:+33450845535">+33 4 50 84 55 35</a> <span class="resto-demand demand-low">LOW–MED</span></div>
+      </div>
+    </div>
+
+    <!-- L'As des Neiges & Le Comptoir -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍝 L'As des Neiges & Le Comptoir</h3>
+        <span class="resto-price">€20 – €40</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-meta">
+          <span>⭐ 4.2 Google (280+)</span>
+          <span>⭐ 4.0 TripAdvisor (110+)</span>
+          <span>🚶 3 min</span>
+        </div>
+        <div class="resto-tags">
+          <span class="resto-tag">Pizza</span>
+          <span class="resto-tag">Pasta</span>
+          <span class="resto-tag">French</span>
+        </div>
+        <div class="resto-booking">📞 <a href="tel:+33450806253">+33 4 50 80 62 53</a></div>
+      </div>
+    </div>
+
+    <!-- Le Tyrol -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍕 Le Tyrol</h3>
+        <span class="resto-price">€20 – €40</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-meta">
+          <span>⭐ 4.2 Google (300+)</span>
+          <span>⭐ 4.2 TripAdvisor (300+)</span>
+          <span>🚶 2–3 min</span>
+        </div>
+        <div class="resto-tags">
+          <span class="resto-tag">Pizza</span>
+          <span class="resto-tag">Grill</span>
+        </div>
+        <div class="resto-booking">Walk-in <span class="resto-demand demand-low">LOW</span></div>
+      </div>
     </div>
 
     <h2 class="section-title" style="margin-top: 2rem;">🍺 Bars & Après</h2>

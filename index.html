@@ -279,10 +279,13 @@
       border-radius: 16px;
       padding: 1rem 1.2rem;
       margin-bottom: 1.2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .weather-banner .weather-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      margin-bottom: 0.8rem;
     }
     .weather-banner a {
       color: var(--snow);
@@ -295,6 +298,54 @@
       transition: background 0.2s;
     }
     .weather-banner a:hover { background: rgba(255,255,255,0.35); }
+
+    .weather-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+    }
+    .weather-day {
+      background: rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 0.6rem;
+      text-align: center;
+      backdrop-filter: blur(4px);
+    }
+    .weather-day .wd-label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    .weather-slot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.3rem 0;
+      font-size: 0.75rem;
+    }
+    .weather-slot .ws-time { opacity: 0.7; font-size: 0.7rem; }
+    .weather-slot .ws-icon { font-size: 1.3rem; margin: 0.1rem 0; }
+    .weather-slot .ws-temp { font-weight: 600; font-size: 0.85rem; }
+    .weather-slot .ws-rain { opacity: 0.8; font-size: 0.7rem; }
+    .weather-loading { text-align: center; padding: 1rem; opacity: 0.8; }
+
+    @media (max-width: 480px) {
+      .weather-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .weather-banner .weather-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+      }
+    }
+    @media (min-width: 481px) and (max-width: 768px) {
+      .weather-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
 
     /* Responsive – tablets and smaller */
     @media (max-width: 768px) {
@@ -344,9 +395,6 @@
       .packing-progress-bar { padding: 0.8rem 1rem; border-radius: 12px; }
 
       .weather-banner {
-        flex-direction: column;
-        gap: 0.7rem;
-        text-align: center;
         border-radius: 12px;
       }
 
@@ -375,11 +423,13 @@
   <div id="planning" class="tab-content active">
 
     <div class="weather-banner">
-      <div>
-        <strong>☁️ Weather in Les Gets</strong><br>
-        <span style="font-size:0.85rem;">Check the latest forecast before you ride!</span>
+      <div class="weather-header">
+        <strong>☁️ Weather Forecast – Les Gets</strong>
+        <a href="https://www.mountain-forecast.com/peaks/Les-Gets/forecasts/1172" target="_blank">Full Forecast →</a>
       </div>
-      <a href="https://www.mountain-forecast.com/peaks/Les-Gets/forecasts/1172" target="_blank">View Forecast →</a>
+      <div id="weather-grid" class="weather-grid">
+        <div class="weather-loading">Loading weather data...</div>
+      </div>
     </div>
 
     <!-- Wednesday -->
@@ -836,6 +886,92 @@
     });
 
     renderPackingList();
+
+    // Weather forecast from Open-Meteo (free, no API key)
+    async function loadWeather() {
+      const grid = document.getElementById('weather-grid');
+      const tripDays = [
+        { date: '2026-06-24', label: 'Wed 24' },
+        { date: '2026-06-25', label: 'Thu 25' },
+        { date: '2026-06-26', label: 'Fri 26' },
+        { date: '2026-06-27', label: 'Sat 27' },
+        { date: '2026-06-28', label: 'Sun 28' },
+      ];
+
+      const weatherIcons = {
+        0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+        45: '🌫️', 48: '🌫️',
+        51: '🌦️', 53: '🌦️', 55: '🌧️',
+        56: '🌧️', 57: '🌧️',
+        61: '🌧️', 63: '🌧️', 65: '🌧️',
+        66: '🌧️', 67: '🌧️',
+        71: '🌨️', 73: '🌨️', 75: '🌨️', 77: '🌨️',
+        80: '🌦️', 81: '🌧️', 82: '🌧️',
+        85: '🌨️', 86: '🌨️',
+        95: '⛈️', 96: '⛈️', 99: '⛈️',
+      };
+
+      try {
+        const url = 'https://api.open-meteo.com/v1/forecast?latitude=46.1567&longitude=6.6697&hourly=temperature_2m,weathercode,precipitation_probability&timezone=Europe/Paris&start_date=2026-06-24&end_date=2026-06-28';
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (!data.hourly) throw new Error('No data');
+
+        grid.innerHTML = '';
+
+        tripDays.forEach(day => {
+          const dayDiv = document.createElement('div');
+          dayDiv.className = 'weather-day';
+
+          const slots = [
+            { label: 'Morning', hours: [7, 8, 9, 10, 11] },
+            { label: 'Afternoon', hours: [12, 13, 14, 15, 16, 17] },
+            { label: 'Evening', hours: [18, 19, 20, 21, 22] },
+          ];
+
+          let slotsHtml = `<div class="wd-label">${day.label}</div>`;
+
+          slots.forEach(slot => {
+            const indices = slot.hours.map(h => {
+              const dateStr = `${day.date}T${String(h).padStart(2, '0')}:00`;
+              return data.hourly.time.indexOf(dateStr);
+            }).filter(i => i !== -1);
+
+            if (indices.length === 0) {
+              slotsHtml += `<div class="weather-slot"><span class="ws-time">${slot.label}</span><span class="ws-icon">❓</span><span class="ws-temp">--</span></div>`;
+              return;
+            }
+
+            const temps = indices.map(i => data.hourly.temperature_2m[i]);
+            const codes = indices.map(i => data.hourly.weathercode[i]);
+            const rains = indices.map(i => data.hourly.precipitation_probability[i]);
+
+            const avgTemp = Math.round(temps.reduce((a, b) => a + b, 0) / temps.length);
+            const maxRain = Math.max(...rains);
+            const modeCode = codes.sort((a, b) =>
+              codes.filter(v => v === a).length - codes.filter(v => v === b).length
+            ).pop();
+            const icon = weatherIcons[modeCode] || '🌡️';
+
+            slotsHtml += `
+              <div class="weather-slot">
+                <span class="ws-time">${slot.label}</span>
+                <span class="ws-icon">${icon}</span>
+                <span class="ws-temp">${avgTemp}°C</span>
+                <span class="ws-rain">💧 ${maxRain}%</span>
+              </div>`;
+          });
+
+          dayDiv.innerHTML = slotsHtml;
+          grid.appendChild(dayDiv);
+        });
+      } catch (e) {
+        grid.innerHTML = '<div class="weather-loading">⚠️ Weather data not yet available (forecasts show ~7 days ahead). <a href="https://www.mountain-forecast.com/peaks/Les-Gets/forecasts/1172" target="_blank" style="color:white;text-decoration:underline;">Check manually →</a></div>';
+      }
+    }
+
+    loadWeather();
   </script>
 </body>
 </html>

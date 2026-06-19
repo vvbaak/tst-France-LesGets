@@ -469,6 +469,26 @@
 
       .section-title { font-size: 1.15rem; }
     }
+
+    /* Map tooltip labels */
+    .map-label {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--sage);
+      border-radius: 6px;
+      padding: 1px 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--forest);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      white-space: nowrap;
+    }
+    .map-label-hotel {
+      background: rgba(45, 80, 22, 0.9);
+      color: white;
+      border-color: var(--forest);
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -1282,6 +1302,20 @@
       className: '',
     });
 
+    const hotelIcon = L.divIcon({
+      html: '<div style="font-size:1.6rem;text-shadow:1px 1px 2px rgba(0,0,0,0.4);">🏨</div>',
+      iconSize: [28, 36],
+      iconAnchor: [14, 36],
+      popupAnchor: [0, -32],
+      className: '',
+    });
+
+    // Hotel marker
+    L.marker([46.1590, 6.6710], { icon: hotelIcon })
+      .addTo(restoMap)
+      .bindPopup('<strong>🏨 Chamois d\'Or Hotel & Spa</strong><br>Our accommodation')
+      .bindTooltip('Chamois d\'Or', { permanent: true, direction: 'top', offset: [0, -30], className: 'map-label map-label-hotel' });
+
     const restaurants = [
       { name: "La R'mize", price: "€25–45", rating: "⭐ 4.8", lat: 46.1610, lng: 6.6695 },
       { name: "L'Aprèski Bar & Resto", price: "€20–40", rating: "⭐ 4.6", lat: 46.1575, lng: 6.6660 },
@@ -1301,7 +1335,8 @@
     restaurants.forEach(r => {
       L.marker([r.lat, r.lng], { icon: restoIcon })
         .addTo(restoMap)
-        .bindPopup(`<strong>${r.name}</strong><br>${r.rating}<br>${r.price}`);
+        .bindPopup(`<strong>${r.name}</strong><br>${r.rating}<br>${r.price}`)
+        .bindTooltip(r.name, { permanent: true, direction: 'top', offset: [0, -30], className: 'map-label' });
     });
 
     // Fix map rendering when tab becomes visible

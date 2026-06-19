@@ -294,11 +294,61 @@
     }
     .weather-banner a:hover { background: rgba(255,255,255,0.35); }
 
-    /* Responsive */
-    @media (max-width: 600px) {
-      .hero h1 { font-size: 1.6rem; }
-      .tab-btn { font-size: 0.82rem; padding: 0.7rem 0.8rem; }
-      .link-grid { grid-template-columns: 1fr; }
+    /* Responsive – tablets and smaller */
+    @media (max-width: 768px) {
+      .tab-content { padding: 1rem; }
+      .link-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    }
+
+    /* Responsive – phones (iPhone 16 Pro Max = 430px, smaller iPhones ~390px) */
+    @media (max-width: 480px) {
+      .hero { padding: 2rem 1rem 1.2rem; }
+      .hero h1 { font-size: 1.5rem; }
+      .hero .subtitle { font-size: 0.95rem; }
+      .hero .dates { font-size: 0.85rem; padding: 0.25rem 0.8rem; }
+      .hero::before { font-size: 5rem; }
+
+      .tab-nav { gap: 0; }
+      .tab-btn {
+        font-size: 0.78rem;
+        padding: 0.65rem 0.5rem;
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+      }
+
+      .tab-content { padding: 0.75rem; }
+
+      .day-card { border-radius: 12px; margin-bottom: 1rem; }
+      .day-header { padding: 0.8rem 1rem; }
+      .day-header h2 { font-size: 1.1rem; }
+      .day-body { padding: 1rem; }
+      .day-body .emoji-title { font-size: 1rem; }
+      .day-body li { font-size: 0.9rem; padding-left: 1.2rem; }
+      .day-body .tip { font-size: 0.85rem; padding: 0.5rem 0.7rem; }
+
+      .link-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+      .link-card { padding: 1rem; border-radius: 12px; }
+      .link-card .link-emoji { font-size: 1.6rem; }
+      .link-card h3 { font-size: 0.95rem; }
+      .link-card p { font-size: 0.82rem; }
+
+      .packing-category { border-radius: 12px; }
+      .packing-category-header { padding: 0.7rem 1rem; font-size: 0.95rem; }
+      .packing-items { padding: 0.4rem 1rem 0.8rem; }
+      .packing-item { padding: 0.4rem 0; }
+      .packing-item label { font-size: 0.9rem; }
+
+      .packing-progress-bar { padding: 0.8rem 1rem; border-radius: 12px; }
+
+      .weather-banner {
+        flex-direction: column;
+        gap: 0.7rem;
+        text-align: center;
+        border-radius: 12px;
+      }
+
+      .section-title { font-size: 1.15rem; }
     }
   </style>
 </head>

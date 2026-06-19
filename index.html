@@ -1317,26 +1317,26 @@
       .bindTooltip('Chamois d\'Or', { permanent: true, direction: 'top', offset: [0, -30], className: 'map-label map-label-hotel' });
 
     const restaurants = [
-      { name: "La R'mize", price: "€25–45", rating: "⭐ 4.8", lat: 46.1610, lng: 6.6695 },
-      { name: "L'Aprèski Bar & Resto", price: "€20–40", rating: "⭐ 4.6", lat: 46.1575, lng: 6.6660 },
-      { name: "Vina Annapurna", price: "€25–45", rating: "⭐ 4.6", lat: 46.1583, lng: 6.6700 },
-      { name: "Brasserie Du Centre", price: "€20–40", rating: "⭐ 4.6", lat: 46.1580, lng: 6.6688 },
-      { name: "Les Durs à Cuire", price: "€25–45", rating: "⭐ 4.6", lat: 46.1572, lng: 6.6720 },
-      { name: "Les Copeaux", price: "€25–50", rating: "⭐ 4.5", lat: 46.1578, lng: 6.6675 },
-      { name: "Le Vaffieu", price: "€25–45", rating: "⭐ 4.5", lat: 46.1555, lng: 6.6650 },
-      { name: "Le Boomerang", price: "€18–35", rating: "⭐ 4.5", lat: 46.1585, lng: 6.6682 },
-      { name: "Le George", price: "€20–40", rating: "⭐ 4.4", lat: 46.1582, lng: 6.6693 },
-      { name: "Pizzalino", price: "€15–30", rating: "⭐ 4.3", lat: 46.1581, lng: 6.6685 },
-      { name: "La Biskatcha", price: "€20–48", rating: "⭐ 4.3", lat: 46.1577, lng: 6.6697 },
-      { name: "L'As des Neiges & Le Comptoir", price: "€20–40", rating: "⭐ 4.2", lat: 46.1579, lng: 6.6670 },
-      { name: "Le Tyrol", price: "€20–40", rating: "⭐ 4.2", lat: 46.1576, lng: 6.6705 },
+      { name: "La R'mize", price: "€25–45", rating: "⭐ 4.8", cuisine: "French / Alpine", lat: 46.1610, lng: 6.6695 },
+      { name: "L'Aprèski Bar & Resto", price: "€20–40", rating: "⭐ 4.6", cuisine: "French + Casual", lat: 46.1575, lng: 6.6660 },
+      { name: "Vina Annapurna", price: "€25–45", rating: "⭐ 4.6", cuisine: "Modern French", lat: 46.1583, lng: 6.6700 },
+      { name: "Brasserie Du Centre", price: "€20–40", rating: "⭐ 4.6", cuisine: "Pizza, Burgers, French", lat: 46.1580, lng: 6.6688 },
+      { name: "Les Durs à Cuire", price: "€25–45", rating: "⭐ 4.6", cuisine: "Burgers, BBQ / Meats", lat: 46.1572, lng: 6.6720 },
+      { name: "Les Copeaux", price: "€25–50", rating: "⭐ 4.5", cuisine: "French, Fondue", lat: 46.1578, lng: 6.6675 },
+      { name: "Le Vaffieu", price: "€25–45", rating: "⭐ 4.5", cuisine: "Alpine Comfort", lat: 46.1555, lng: 6.6650 },
+      { name: "Le Boomerang", price: "€18–35", rating: "⭐ 4.5", cuisine: "Burgers, Casual", lat: 46.1585, lng: 6.6682 },
+      { name: "Le George", price: "€20–40", rating: "⭐ 4.4", cuisine: "French / Wine Bar", lat: 46.1582, lng: 6.6693 },
+      { name: "Pizzalino", price: "€15–30", rating: "⭐ 4.3", cuisine: "Pizza", lat: 46.1581, lng: 6.6685 },
+      { name: "La Biskatcha", price: "€20–48", rating: "⭐ 4.3", cuisine: "BBQ, Grilled Meats", lat: 46.1577, lng: 6.6697 },
+      { name: "L'As des Neiges & Le Comptoir", price: "€20–40", rating: "⭐ 4.2", cuisine: "Pizza, Pasta", lat: 46.1579, lng: 6.6670 },
+      { name: "Le Tyrol", price: "€20–40", rating: "⭐ 4.2", cuisine: "Pizza, Grill", lat: 46.1576, lng: 6.6705 },
     ];
 
     restaurants.forEach(r => {
       L.marker([r.lat, r.lng], { icon: restoIcon })
         .addTo(restoMap)
         .bindPopup(`<strong>${r.name}</strong><br>${r.rating}<br>${r.price}`)
-        .bindTooltip(r.name, { permanent: true, direction: 'top', offset: [0, -30], className: 'map-label' });
+        .bindTooltip(`${r.name}<br><span style="font-size:0.6rem;opacity:0.7;">${r.cuisine}</span>`, { permanent: true, direction: 'top', offset: [0, -30], className: 'map-label' });
     });
 
     // Fix map rendering when tab becomes visible

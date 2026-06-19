@@ -1336,7 +1336,7 @@
       L.marker([r.lat, r.lng], { icon: restoIcon })
         .addTo(restoMap)
         .bindPopup(`<strong>${r.name}</strong><br>${r.rating}<br>${r.price}`)
-        .bindTooltip(`${r.name}<br><span style="font-size:0.6rem;opacity:0.7;">${r.cuisine}</span><br><span style="font-size:0.6rem;">${r.rating}</span>`, { permanent: true, direction: 'top', offset: [0, -30], className: 'map-label' });
+        .bindTooltip(`${r.name}<br><span style="font-size:0.6rem;opacity:0.7;">${r.cuisine}</span>`, { permanent: true, direction: 'top', offset: [0, -30], className: 'map-label' });
     });
 
     // Fix map rendering when tab becomes visible

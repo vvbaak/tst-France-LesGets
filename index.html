@@ -141,6 +141,8 @@
       color: var(--moss);
       font-weight: bold;
     }
+    .day-body li.no-bullet::before { content: none; }
+    .day-body li.no-bullet { padding-left: 0; }
     .day-body .tip {
       margin-top: 0.8rem;
       padding: 0.6rem 0.8rem;
@@ -389,20 +391,20 @@
       <div class="day-body">
         <div class="emoji-title">Travel Day – Netherlands → Les Gets</div>
         <ul>
-          <li style="list-style:none; padding-left:0;"><strong>Ochtend vertrek</strong></li>
+          <li class="no-bullet"><strong>Ochtend vertrek</strong></li>
           <li>Vincent gaat om 5:25 naar Mark</li>
           <li>Vincent + Mark zijn ongeveer 5:45 bij Jeffrey</li>
           <li>Plan is om uiterlijk 6:00 weg te rijden uit Apeldoorn</li>
           <li>Ongeveer 18:00 in Les Gets</li>
         </ul>
         <ul style="margin-top: 0.8rem;">
-          <li style="list-style:none; padding-left:0;"><strong>Laadstops gepland in</strong></li>
+          <li class="no-bullet"><strong>Laadstops gepland in</strong></li>
           <li>Wiesbaden – 24 min</li>
           <li>Kappel-Grafenhausen – 14 min</li>
           <li>Kriegstetten – 19 min</li>
         </ul>
         <ul style="margin-top: 0.8rem;">
-          <li style="list-style:none; padding-left:0;"><strong>Quick charge onderweg</strong></li>
+          <li class="no-bullet"><strong>Quick charge onderweg</strong></li>
           <li>Thonon-les-Bains – <a href="https://maps.app.goo.gl/MwFqi3Jmch3Yuky16" target="_blank" style="color: var(--moss);">Powerdot Charging Station</a></li>
           <li>Rue du Pont de Dranse – HOTELF1 Thonon</li>
         </ul>

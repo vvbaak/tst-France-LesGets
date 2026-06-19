@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🚵 Les Gets 2026 – MTB Trip</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+
+    :root {
+      --forest: #2d5016;
+      --forest-light: #3a6b1e;
+      --moss: #4a7c28;
+      --sage: #7fa05b;
+      --sand: #e8dcc8;
+      --sand-light: #f5f0e6;
+      --earth: #8b6f47;
+      --earth-dark: #6b5535;
+      --rock: #5a5a5a;
+      --snow: #ffffff;
+      --sky: #6ba3c7;
+      --sunset: #e07b3c;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--sand-light);
+      color: #333;
+      min-height: 100vh;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, var(--forest) 0%, var(--moss) 40%, var(--sage) 100%);
+      color: var(--snow);
+      padding: 2.5rem 1rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '⛰️';
+      font-size: 8rem;
+      position: absolute;
+      top: -1rem;
+      right: -1rem;
+      opacity: 0.1;
+    }
+    .hero h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    .hero .subtitle {
+      font-size: 1.1rem;
+      font-weight: 300;
+      opacity: 0.9;
+    }
+    .hero .dates {
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+      background: rgba(255,255,255,0.15);
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 20px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      background: var(--forest);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1;
+      min-width: max-content;
+      padding: 0.9rem 1.2rem;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.65);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--snow); background: rgba(255,255,255,0.08); }
+    .tab-btn.active {
+      color: var(--snow);
+      font-weight: 600;
+      border-bottom-color: var(--sunset);
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* Tab Content */
+    .tab-content { display: none; padding: 1.5rem; max-width: 900px; margin: 0 auto; }
+    .tab-content.active { display: block; }
+
+    /* Day Cards */
+    .day-card {
+      background: var(--snow);
+      border-radius: 16px;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .day-card:hover { transform: translateY(-2px); }
+    .day-header {
+      padding: 1rem 1.2rem;
+      color: var(--snow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .day-header h2 { font-size: 1.3rem; font-weight: 600; }
+    .day-header .date { font-size: 0.85rem; opacity: 0.85; }
+    .day-body { padding: 1.2rem; }
+    .day-body .emoji-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.6rem; }
+    .day-body ul { list-style: none; padding: 0; }
+    .day-body li {
+      padding: 0.4rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+      line-height: 1.5;
+    }
+    .day-body li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--moss);
+      font-weight: bold;
+    }
+    .day-body li.no-bullet::before { content: none; }
+    .day-body li.no-bullet { padding-left: 0; }
+    .day-body .tip {
+      margin-top: 0.8rem;
+      padding: 0.6rem 0.8rem;
+      background: var(--sand-light);
+      border-left: 3px solid var(--sage);
+      border-radius: 0 8px 8px 0;
+      font-size: 0.9rem;
+      color: var(--rock);
+    }
+
+    /* Day color themes */
+    .day-wed .day-header { background: linear-gradient(135deg, var(--earth), var(--earth-dark)); }
+    .day-thu .day-header { background: linear-gradient(135deg, var(--moss), var(--forest)); }
+    .day-fri .day-header { background: linear-gradient(135deg, var(--sunset), #c9612a); }
+    .day-sat .day-header { background: linear-gradient(135deg, var(--sky), #4a8ab0); }
+    .day-sun .day-header { background: linear-gradient(135deg, var(--earth), var(--rock)); }
+
+    /* Packing List */
+    .packing-category {
+      background: var(--snow);
+      border-radius: 16px;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .packing-category-header {
+      padding: 0.8rem 1.2rem;
+      background: linear-gradient(135deg, var(--forest), var(--moss));
+      color: var(--snow);
+      font-weight: 600;
+      font-size: 1.05rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .packing-category-header .progress {
+      font-size: 0.8rem;
+      background: rgba(255,255,255,0.2);
+      padding: 0.15rem 0.6rem;
+      border-radius: 12px;
+    }
+    .packing-items { padding: 0.5rem 1.2rem 1rem; }
+    .packing-item {
+      display: flex;
+      align-items: center;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid var(--sand);
+    }
+    .packing-item:last-child { border-bottom: none; }
+    .packing-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-right: 0.8rem;
+      accent-color: var(--moss);
+      cursor: pointer;
+    }
+    .packing-item label {
+      cursor: pointer;
+      flex: 1;
+      font-size: 0.95rem;
+    }
+    .packing-item.checked label {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+
+    /* Overall packing progress */
+    .packing-progress-bar {
+      background: var(--snow);
+      border-radius: 16px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .packing-progress-bar .bar-track {
+      height: 10px;
+      background: var(--sand);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 0.4rem;
+    }
+    .packing-progress-bar .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--moss), var(--sage));
+      border-radius: 5px;
+      transition: width 0.4s ease;
+    }
+    .packing-progress-bar .bar-label {
+      font-weight: 600;
+      color: var(--forest);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Links & Restaurants */
+    .link-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .link-card {
+      background: var(--snow);
+      border-radius: 16px;
+      padding: 1.2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      color: #333;
+      display: block;
+    }
+    .link-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+    .link-card .link-emoji { font-size: 2rem; margin-bottom: 0.5rem; }
+    .link-card h3 { color: var(--forest); margin-bottom: 0.3rem; font-size: 1rem; }
+    .link-card p { font-size: 0.85rem; color: var(--rock); line-height: 1.4; }
+
+    /* Restaurant cards */
+    .resto-card {
+      background: var(--snow);
+      border-radius: 16px;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .resto-card:hover { transform: translateY(-2px); }
+    .resto-header {
+      padding: 0.8rem 1.2rem;
+      background: linear-gradient(135deg, var(--forest), var(--moss));
+      color: var(--snow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .resto-header h3 { font-size: 1.05rem; font-weight: 600; margin: 0; }
+    .resto-header .resto-price {
+      background: rgba(255,255,255,0.2);
+      padding: 0.15rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .resto-body {
+      padding: 0.8rem 1.2rem;
+      display: flex;
+      gap: 1rem;
+    }
+    .resto-info { flex: 1; }
+    .resto-img {
+      width: 100px;
+      height: 80px;
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--sand), var(--sage));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .resto-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .resto-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      font-size: 0.85rem;
+      color: var(--rock);
+      margin-bottom: 0.5rem;
+    }
+    .resto-meta span { display: flex; align-items: center; gap: 0.25rem; }
+    .resto-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.5rem; }
+    .resto-tag {
+      background: var(--sand);
+      color: var(--earth-dark);
+      padding: 0.15rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .resto-booking {
+      font-size: 0.82rem;
+      color: var(--rock);
+      border-top: 1px solid var(--sand);
+      padding-top: 0.5rem;
+      margin-top: 0.3rem;
+    }
+    .resto-booking a { color: var(--moss); text-decoration: none; font-weight: 500; }
+    .resto-booking a:hover { text-decoration: underline; }
+    .resto-demand {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 8px;
+      margin-left: 0.3rem;
+    }
+    .demand-high { background: #fde8e8; color: #c0392b; }
+    .demand-med { background: #fef3e2; color: #e67e22; }
+    .demand-low { background: #e8f5e9; color: #27ae60; }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--forest);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Weather widget */
+    .weather-banner {
+      background: linear-gradient(135deg, var(--sky), #4a8ab0);
+      color: var(--snow);
+      border-radius: 16px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .weather-banner .weather-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+    }
+    .weather-banner a {
+      color: var(--snow);
+      background: rgba(255,255,255,0.2);
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+    .weather-banner a:hover { background: rgba(255,255,255,0.35); }
+
+    .weather-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+    }
+    .weather-day {
+      background: rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 0.6rem;
+      text-align: center;
+      backdrop-filter: blur(4px);
+    }
+    .weather-day .wd-label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    .weather-slot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.3rem 0;
+      font-size: 0.75rem;
+    }
+    .weather-slot .ws-time { opacity: 0.7; font-size: 0.7rem; }
+    .weather-slot .ws-icon { font-size: 1.3rem; margin: 0.1rem 0; }
+    .weather-slot .ws-temp { font-weight: 600; font-size: 0.85rem; }
+    .weather-slot .ws-rain { opacity: 0.8; font-size: 0.7rem; }
+    .weather-loading { text-align: center; padding: 1rem; opacity: 0.8; }
+
+    @media (max-width: 480px) {
+      .weather-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .weather-banner .weather-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+      }
+    }
+    @media (min-width: 481px) and (max-width: 768px) {
+      .weather-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* Responsive – tablets and smaller */
+    @media (max-width: 768px) {
+      .tab-content { padding: 1rem; }
+      .link-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    }
+
+    /* Responsive – phones (iPhone 16 Pro Max = 430px, smaller iPhones ~390px) */
+    @media (max-width: 480px) {
+      .hero { padding: 2rem 1rem 1.2rem; }
+      .hero h1 { font-size: 1.5rem; }
+      .hero .subtitle { font-size: 0.95rem; }
+      .hero .dates { font-size: 0.85rem; padding: 0.25rem 0.8rem; }
+      .hero::before { font-size: 5rem; }
+
+      .tab-nav { gap: 0; }
+      .tab-btn {
+        font-size: 0.78rem;
+        padding: 0.65rem 0.5rem;
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+      }
+
+      .tab-content { padding: 0.75rem; }
+
+      .day-card { border-radius: 12px; margin-bottom: 1rem; }
+      .day-header { padding: 0.8rem 1rem; }
+      .day-header h2 { font-size: 1.1rem; }
+      .day-body { padding: 1rem; }
+      .day-body .emoji-title { font-size: 1rem; }
+      .day-body li { font-size: 0.9rem; padding-left: 1.2rem; }
+      .day-body .tip { font-size: 0.85rem; padding: 0.5rem 0.7rem; }
+
+      .link-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+      .link-card { padding: 1rem; border-radius: 12px; }
+      .link-card .link-emoji { font-size: 1.6rem; }
+      .link-card h3 { font-size: 0.95rem; }
+      .link-card p { font-size: 0.82rem; }
+
+      .packing-category { border-radius: 12px; }
+      .packing-category-header { padding: 0.7rem 1rem; font-size: 0.95rem; }
+      .packing-items { padding: 0.4rem 1rem 0.8rem; }
+      .packing-item { padding: 0.4rem 0; }
+      .packing-item label { font-size: 0.9rem; }
+
+      .packing-progress-bar { padding: 0.8rem 1rem; border-radius: 12px; }
+
+      .weather-banner {
+        border-radius: 12px;
+      }
+
+      .section-title { font-size: 1.15rem; }
+    }
+
+    /* Map tooltip labels */
+    .map-label {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--sage);
+      border-radius: 6px;
+      padding: 1px 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--forest);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      white-space: nowrap;
+    }
+    .map-label-hotel {
+      background: rgba(45, 80, 22, 0.9);
+      color: white;
+      border-color: var(--forest);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>🚵 Les Gets 2026</h1>
+    <p class="subtitle">Mountain Bike Trip – France</p>
+    <div class="dates">📅 Wed 24 June – Sun 28 June</div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="planning">📋 Day Planning</button>
+    <button class="tab-btn" data-tab="packing">🎒 Packing List</button>
+    <button class="tab-btn" data-tab="restaurants">🍽️ Food & Drinks</button>
+    <button class="tab-btn" data-tab="links">🏔️ Pass'Portes</button>
+  </nav>
+
+  <!-- DAY PLANNING TAB -->
+  <div id="planning" class="tab-content active">
+
+    <div class="weather-banner">
+      <div class="weather-header">
+        <strong>☁️ Weather Forecast – Les Gets</strong>
+        <a href="https://www.mountain-forecast.com/peaks/Les-Gets/forecasts/1172" target="_blank">Full Forecast →</a>
+      </div>
+      <div id="weather-grid" class="weather-grid">
+        <div class="weather-loading">Loading weather data...</div>
+      </div>
+    </div>
+
+    <!-- Wednesday -->
+    <div class="day-card day-wed">
+      <div class="day-header">
+        <h2>🚗 Wednesday</h2>
+        <span class="date">24 June</span>
+      </div>
+      <div class="day-body">
+        <div class="emoji-title">Travel Day – Netherlands → Les Gets</div>
+        <ul>
+          <li class="no-bullet"><strong>Ochtend vertrek</strong></li>
+          <li>Vincent gaat om 5:25 naar Mark</li>
+          <li>Vincent + Mark zijn ongeveer 5:45 bij Jeffrey</li>
+          <li>Plan is om uiterlijk 6:00 weg te rijden uit Apeldoorn</li>
+          <li>Ongeveer 18:00 in Les Gets</li>
+        </ul>
+        <ul style="margin-top: 0.8rem;">
+          <li class="no-bullet"><strong>Laadstops gepland in</strong></li>
+          <li>Wiesbaden – 24 min</li>
+          <li>Kappel-Grafenhausen – 14 min</li>
+          <li>Kriegstetten – 19 min</li>
+        </ul>
+        <ul style="margin-top: 0.8rem;">
+          <li class="no-bullet"><strong>Quick charge onderweg</strong></li>
+          <li>Thonon-les-Bains – <a href="https://maps.app.goo.gl/MwFqi3Jmch3Yuky16" target="_blank" style="color: var(--moss);">Powerdot Charging Station</a></li>
+          <li>Rue du Pont de Dranse – HOTELF1 Thonon</li>
+        </ul>
+        <ul style="margin-top: 0.8rem;">
+          <li class="no-bullet"><strong>Contact Information</strong></li>
+          <li>Phone: <a href="tel:+33450042941" style="color: var(--moss);">+33 4 50 04 29 41</a></li>
+          <li><a href="https://maps.google.com/?cid=4180114412336882980&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNl" target="_blank" style="color: var(--moss);">Google Maps →</a></li>
+          <li>Bed linen and towels are provided as standard in all rooms</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Thursday -->
+    <div class="day-card day-thu">
+      <div class="day-header">
+        <h2>🚵 Thursday</h2>
+        <span class="date">25 June</span>
+      </div>
+      <div class="day-body">
+        <div class="emoji-title">Easy Riding – Les Gets Bike Park</div>
+        <ul>
+          <li>Warm-up day – get familiar with the trails</li>
+          <li>Start with green & blue runs</li>
+          <li>Explore the Les Gets Bike Park flow trails</li>
+          <li>Lunch break at a mountain restaurant</li>
+          <li>Afternoon: progress to some red trails</li>
+          <li>Wind down and check bikes after riding</li>
+        </ul>
+        <div class="tip">💡 Take it easy on day 1 – get your legs warmed up and learn the terrain.</div>
+      </div>
+    </div>
+
+    <!-- Friday -->
+    <div class="day-card day-fri">
+      <div class="day-header">
+        <h2>🏔️ Friday</h2>
+        <span class="date">26 June</span>
+      </div>
+      <div class="day-body">
+        <div class="emoji-title">Portes du Soleil Bike Trip</div>
+        <ul>
+          <li>Big day – the iconic Portes du Soleil MTB circuit</li>
+          <li>Cross-border ride between France & Switzerland</li>
+          <li>Take the lifts and ride the connecting trails</li>
+          <li>Pack extra water, snacks, and a rain jacket</li>
+          <li>Lunch at a mountain hut along the route</li>
+          <li>Return to Les Gets via the trail network</li>
+        </ul>
+        <ul style="margin-top: 0.8rem;">
+          <li class="no-bullet"><strong>Ochtend vertrek</strong></li>
+          <li>Naar Montriond-Les Lindarets – <a href="https://maps.app.goo.gl/qJ645xh8s5GDCFEQ7" target="_blank" style="color: var(--moss);">Route</a></li>
+          <li>Duur: 40 min</li>
+          <li>Gewenste aankomst: <strong>7:30</strong></li>
+        </ul>
+        <div class="tip">💡 Start early! The full Portes du Soleil loop is a long day. Bring a fully charged phone and trail map.</div>
+      </div>
+    </div>
+
+    <!-- Saturday -->
+    <div class="day-card day-sat">
+      <div class="day-header">
+        <h2>🤘 Saturday</h2>
+        <span class="date">27 June</span>
+      </div>
+      <div class="day-body">
+        <div class="emoji-title">Bike Park Riding – Send It!</div>
+        <ul>
+          <li>Full day at the Les Gets / Morzine bike parks</li>
+          <li>Hit the jump lines and technical trails</li>
+          <li>Session your favourite runs from earlier in the week</li>
+          <li>Try some of the harder red/black trails</li>
+          <li>Afternoon: last laps before the lifts close</li>
+          <li>Evening: celebrate with dinner out 🍻</li>
+        </ul>
+        <div class="tip">💡 Last full day of riding – make it count but stay safe. Check your brakes and tyre pressure!</div>
+      </div>
+    </div>
+
+    <!-- Sunday -->
+    <div class="day-card day-sun">
+      <div class="day-header">
+        <h2>🏠 Sunday</h2>
+        <span class="date">28 June</span>
+      </div>
+      <div class="day-body">
+        <div class="emoji-title">Departure Day – Les Gets → Netherlands</div>
+        <ul>
+          <li>Pack up and clean the accommodation</li>
+          <li>⏰ Check-out time: <strong>10:00</strong></li>
+          <li>Load bikes and luggage</li>
+          <li>Drive back to the Netherlands</li>
+          <li>Relive the memories on the drive home 🎵</li>
+        </ul>
+        <div class="tip">💡 Check under beds and in bathrooms before you leave – things always get left behind!</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PACKING LIST TAB -->
+  <div id="packing" class="tab-content">
+
+    <div class="packing-progress-bar">
+      <div class="bar-label">
+        <span>📦 Packing Progress</span>
+        <span id="progress-text">0 / 0</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" id="progress-fill" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <!-- Categories populated by JS -->
+    <div id="packing-list"></div>
+  </div>
+
+  <!-- RESTAURANTS TAB -->
+  <div id="restaurants" class="tab-content">
+    <h2 class="section-title">🍽️ Restaurants</h2>
+
+    <!-- La R'mize -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🥇 La R'mize</h3>
+        <span class="resto-price">€25 – €45</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-info">
+          <div class="resto-meta">
+            <span>⭐ 4.8 Google (499)</span>
+            <span>⭐ 4.8 TripAdvisor (499)</span>
+            <span>🚶 6–8 min</span>
+          </div>
+          <div class="resto-tags">
+            <span class="resto-tag">French</span>
+            <span class="resto-tag">Alpine</span>
+          </div>
+          <div class="resto-booking">📞 <a href="tel:+33450797557">+33 4 50 79 75 57</a> / book via website <span class="resto-demand demand-high">HIGH DEMAND</span></div>
+        </div>
+        <div class="resto-img"><img src="https://media-cdn.tripadvisor.com/media/photo-w/0e/85/b0/6b/zoomez-sur-la-photo-et.jpg" alt="La R'mize"></div>
+      </div>
+    </div>
+
+    <!-- L'Aprèski Bar & Resto -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍷 L'Aprèski Bar & Resto</h3>
+        <span class="resto-price">€20 – €40</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-info">
+          <div class="resto-meta">
+            <span>⭐ 4.6 Google (390+)</span>
+            <span>⭐ 4.6 TripAdvisor (391)</span>
+            <span>🚶 4–6 min</span>
+          </div>
+          <div class="resto-tags">
+            <span class="resto-tag">French</span>
+            <span class="resto-tag">Casual</span>
+          </div>
+          <div class="resto-booking">📞 <a href="tel:+33450758095">+33 4 50 75 80 95</a> / walk-in early <span class="resto-demand demand-med">MED–HIGH</span></div>
+        </div>
+        <div class="resto-img"><img src="https://media-cdn.tripadvisor.com/media/photo-o/16/92/72/c8/une-journee-de-fevrier.jpg" alt="L'Aprèski"></div>
+      </div>
+    </div>
+
+    <!-- Vina Annapurna -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍽️ Vina Annapurna</h3>
+        <span class="resto-price">€25 – €45</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-info">
+          <div class="resto-meta">
+            <span>⭐ 4.6 Google (267)</span>
+            <span>⭐ 4.6 TripAdvisor (267)</span>
+            <span>🚶 3–5 min</span>
+          </div>
+          <div class="resto-tags">
+            <span class="resto-tag">Modern French</span>
+          </div>
+          <div class="resto-booking">📞 <a href="tel:+33450863112">+33 4 50 86 31 12</a> / reserve online <span class="resto-demand demand-med">MED–HIGH</span></div>
+        </div>
+        <div class="resto-img"><img src="https://media-cdn.tripadvisor.com/media/photo-m/1280/1a/87/11/b3/vina-annapurna-restaurant.jpg" alt="Vina Annapurna"></div>
+      </div>
+    </div>
+
+    <!-- Brasserie Du Centre -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍕 Brasserie Du Centre</h3>
+        <span class="resto-price">€20 – €40</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-info">
+          <div class="resto-meta">
+            <span>⭐ 4.6 Google (520+)</span>
+            <span>⭐ 4.5 TripAdvisor (180+)</span>
+            <span>🚶 1 min</span>
+          </div>
+          <div class="resto-tags">
+            <span class="resto-tag">Pizza</span>
+            <span class="resto-tag">Burgers</span>
+            <span class="resto-tag">French / Alpine</span>
+          </div>
+          <div class="resto-booking">📞 <a href="tel:+33450798708">+33 4 50 79 87 08</a> / Walk-in <span class="resto-demand demand-low">LOW</span></div>
+        </div>
+        <div class="resto-img"><img src="https://media-cdn.tripadvisor.com/media/photo-m/1280/2e/7e/58/ea/caption.jpg" alt="Brasserie Du Centre"></div>
+      </div>
+    </div>
+
+    <!-- Les Durs à Cuire -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🥩 Les Durs à Cuire</h3>
+        <span class="resto-price">€25 – €45</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-info">
+          <div class="resto-meta">
+            <span>⭐ 4.6 Google (210+)</span>
+            <span>⭐ 4.5 TripAdvisor (95+)</span>
+            <span>🚶 4 min</span>
+          </div>
+          <div class="resto-tags">
+            <span class="resto-tag">Burgers</span>
+            <span class="resto-tag">BBQ / Meats</span>
+            <span class="resto-tag">French</span>
+          </div>
+          <div class="resto-booking">📞 <a href="tel:+33951782509">+33 9 51 78 25 09</a> <span class="resto-demand demand-low">LOW</span></div>
+        </div>
+        <div class="resto-img"><img src="https://img.restaurantguru.com/w550/h367/rc8f-Les-Durs-a-Cuire-design-2021-08.jpg" alt="Les Durs à Cuire"></div>
+      </div>
+    </div>
+
+    <!-- Les Copeaux -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🧀 Les Copeaux</h3>
+        <span class="resto-price">€25 – €50</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-info">
+          <div class="resto-meta">
+            <span>⭐ 4.5 Google (640+)</span>
+            <span>⭐ 4.5 TripAdvisor (410+)</span>
+            <span>🚶 2–4 min</span>
+          </div>
+          <div class="resto-tags">
+            <span class="resto-tag">French</span>
+            <span class="resto-tag">Traditional Alpine</span>
+            <span class="resto-tag">Fondue</span>
+          </div>
+          <div class="resto-booking">📞 <a href="tel:+33450797850">+33 4 50 79 78 50</a> / Website <span class="resto-demand demand-high">HIGH – MUST BOOK</span></div>
+        </div>
+        <div class="resto-img"><img src="https://media-cdn.tripadvisor.com/media/photo-m/1280/16/84/00/d9/photo0jpg.jpg" alt="Les Copeaux"></div>
+      </div>
+    </div>
+
+    <!-- Le Vaffieu -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🏔️ Le Vaffieu</h3>
+        <span class="resto-price">€25 – €45</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-info">
+          <div class="resto-meta">
+            <span>⭐ 4.5 Google (300+)</span>
+            <span>⭐ 4.5 TripAdvisor (316)</span>
+            <span>🚶 7–10 min</span>
+          </div>
+          <div class="resto-tags">
+            <span class="resto-tag">Alpine Comfort</span>
+          </div>
+          <div class="resto-booking">📞 <a href="tel:+33450790943">+33 4 50 79 09 43</a> <span class="resto-demand demand-med">MED</span></div>
+        </div>
+        <div class="resto-img"><img src="https://media-cdn.tripadvisor.com/media/photo-w/1b/d3/ad/a9/photo1jpg.jpg" alt="Le Vaffieu"></div>
+      </div>
+    </div>
+
+    <!-- Le Boomerang -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍔 Le Boomerang</h3>
+        <span class="resto-price">€18 – €35</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-info">
+          <div class="resto-meta">
+            <span>⭐ 4.5 Google (310+)</span>
+            <span>⭐ 4.0 TripAdvisor (140+)</span>
+            <span>🚶 3 min</span>
+          </div>
+          <div class="resto-tags">
+            <span class="resto-tag">Burgers</span>
+            <span class="resto-tag">Casual</span>
+            <span class="resto-tag">International</span>
+          </div>
+          <div class="resto-booking">📞 <a href="tel:+33646518205">+33 6 46 51 82 05</a> / Walk-in <span class="resto-demand demand-low">LOW</span></div>
+        </div>
+        <div class="resto-img"><img src="https://media-cdn.tripadvisor.com/media/photo-m/1280/22/8e/0a/b5/tbone.jpg" alt="Le Boomerang"></div>
+      </div>
+    </div>
+
+    <!-- Le George -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍷 Le George</h3>
+        <span class="resto-price">€20 – €40</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-info">
+          <div class="resto-meta">
+            <span>⭐ 4.4 Google (184)</span>
+            <span>⭐ 4.4 TripAdvisor (184)</span>
+            <span>🚶 2–3 min</span>
+          </div>
+          <div class="resto-tags">
+            <span class="resto-tag">French</span>
+            <span class="resto-tag">Wine Bar</span>
+          </div>
+          <div class="resto-booking">📞 <a href="tel:+33450794330">+33 4 50 79 43 30</a> / Walk-in <span class="resto-demand demand-low">LOW–MED</span></div>
+        </div>
+        <div class="resto-img"><img src="https://img.restaurantguru.com/w550/h367/r74d-Le-George-design-2021-09-1.jpg" alt="Le George"></div>
+      </div>
+    </div>
+
+    <!-- Pizzalino -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍕 Pizzalino</h3>
+        <span class="resto-price">€15 – €30</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-info">
+          <div class="resto-meta">
+            <span>⭐ 4.3 Google (200+)</span>
+            <span>⭐ 4.0 TripAdvisor (47)</span>
+            <span>🚶 1–2 min</span>
+          </div>
+          <div class="resto-tags">
+            <span class="resto-tag">Pizza</span>
+          </div>
+          <div class="resto-booking">📞 <a href="tel:+33450747410">+33 4 50 74 74 10</a> / Walk-in <span class="resto-demand demand-low">LOW</span></div>
+        </div>
+        <div class="resto-img"><img src="https://www.pizzalino-lesgets.com/wp-content/uploads/2023/02/pizzalino-web-8.jpg" alt="Pizzalino"></div>
+      </div>
+    </div>
+
+    <!-- La Biskatcha -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🔥 La Biskatcha</h3>
+        <span class="resto-price">€20 – €48</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-info">
+          <div class="resto-meta">
+            <span>⭐ 4.3 Google (340+)</span>
+            <span>⭐ 4.0 TripAdvisor (220+)</span>
+            <span>🚶 2–3 min</span>
+          </div>
+          <div class="resto-tags">
+            <span class="resto-tag">BBQ</span>
+            <span class="resto-tag">Grilled Meats</span>
+            <span class="resto-tag">Alpine</span>
+          </div>
+          <div class="resto-booking">📞 <a href="tel:+33450845535">+33 4 50 84 55 35</a> / Website <span class="resto-demand demand-low">LOW–MED</span></div>
+        </div>
+        <div class="resto-img"><img src="https://media-cdn.tripadvisor.com/media/photo-m/1280/1b/2d/47/4c/salle-du-restaurant.jpg" alt="La Biskatcha"></div>
+      </div>
+    </div>
+
+    <!-- L'As des Neiges & Le Comptoir -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍝 L'As des Neiges & Le Comptoir</h3>
+        <span class="resto-price">€20 – €40</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-info">
+          <div class="resto-meta">
+            <span>⭐ 4.2 Google (280+)</span>
+            <span>⭐ 4.0 TripAdvisor (110+)</span>
+            <span>🚶 3 min</span>
+          </div>
+          <div class="resto-tags">
+            <span class="resto-tag">Pizza</span>
+            <span class="resto-tag">Pasta</span>
+            <span class="resto-tag">French</span>
+          </div>
+          <div class="resto-booking">📞 <a href="tel:+33450806253">+33 4 50 80 62 53</a> <span class="resto-demand demand-low">LOW</span></div>
+        </div>
+        <div class="resto-img"><img src="https://media-cdn.tripadvisor.com/media/photo-w/11/56/36/29/superbe-restaurant-cuisine.jpg" alt="L'As des Neiges"></div>
+      </div>
+    </div>
+
+    <!-- Le Tyrol -->
+    <div class="resto-card">
+      <div class="resto-header">
+        <h3>🍕 Le Tyrol</h3>
+        <span class="resto-price">€20 – €40</span>
+      </div>
+      <div class="resto-body">
+        <div class="resto-info">
+          <div class="resto-meta">
+            <span>⭐ 4.2 Google (300+)</span>
+            <span>⭐ 4.2 TripAdvisor (300+)</span>
+            <span>🚶 2–3 min</span>
+          </div>
+          <div class="resto-tags">
+            <span class="resto-tag">Pizza</span>
+            <span class="resto-tag">Grill</span>
+          </div>
+          <div class="resto-booking">📞 <a href="tel:+33450797055">+33 4 50 79 70 55</a> / Walk-in <span class="resto-demand demand-low">LOW</span></div>
+        </div>
+        <div class="resto-img"><img src="https://media-cdn.tripadvisor.com/media/photo-w/05/37/0b/fb/tyrol-le.jpg" alt="Le Tyrol"></div>
+      </div>
+    </div>
+
+    <h2 class="section-title" style="margin-top: 2rem;">📍 Restaurant Map</h2>
+    <div id="resto-map" style="height: 400px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); z-index: 1;"></div>
+  </div>
+
+  <!-- PASS'PORTES DU SOLEIL TAB -->
+  <div id="links" class="tab-content">
+    <h2 class="section-title">🏔️ Pass'Portes du Soleil – Voedingsplan</h2>
+
+    <div class="day-card day-fri" style="margin-bottom:1.5rem;">
+      <div class="day-body" style="padding:1.2rem 1.5rem;">
+        <p style="font-size:1rem; line-height:1.6; margin-bottom:0.8rem;">
+          Voor een monstertocht als de Pass'Portes du Soleil is je voeding de sleutel tot succes.
+          Je spieren hebben een flinke voorraad glycogeen nodig, en je zenuwstelsel moet scherp blijven.
+        </p>
+        <p style="font-size:0.95rem; line-height:1.6; color:var(--rock);">
+          Hier is het specifieke voedingsplan voor de dagen voorafgaand en tijdens de vrijdag zelf.
+        </p>
+      </div>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="day-card day-thu">
+      <div class="day-header">
+        <h2>🏔️ 1. Vooraf: Woensdag & Donderdag</h2>
+        <span class="date">Carbo-loading</span>
+      </div>
+      <div class="day-body">
+        <div class="emoji-title">Glycogeenvoorraden maximaal volgooien</div>
+        <ul>
+          <li class="no-bullet"><strong>Focus op koolhydraten</strong></li>
+          <li>Witte of volkoren pasta, rijst, couscous</li>
+          <li>Pannenkoeken (mag met stroop!)</li>
+          <li>Extra brood bij de lunch, magere kwark met havermout en fruit (bananen)</li>
+        </ul>
+        <ul style="margin-top:0.8rem;">
+          <li class="no-bullet"><strong>Beperk te vette voeding</strong></li>
+          <li>Zware sauzen en vette snacks vertragen je spijsvertering en vullen glycogeen niet aan</li>
+        </ul>
+        <ul style="margin-top:0.8rem;">
+          <li class="no-bullet"><strong>Hydratatie</strong></li>
+          <li>Drink woensdag en donderdag al bewust 2,5 tot 3 liter water per dag</li>
+          <li>Voeg eventueel al wat elektrolyten toe</li>
+          <li>Als je dorst krijgt in de lift omhoog, ben je eigenlijk al te laat</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="day-card day-fri">
+      <div class="day-header">
+        <h2>🍳 2. Vrijdagochtend: Ontbijt</h2>
+        <span class="date">2–3 uur voor start</span>
+      </div>
+      <div class="day-body">
+        <div class="emoji-title">Rustige maag, stabiele bloedsuikerspiegel</div>
+        <ul>
+          <li class="no-bullet"><strong>De Maaltijd</strong></li>
+          <li><strong>Optie A:</strong> Grote kom havermout in (plantaardige) melk met banaan, lepel honing en schep eiwitpoeder</li>
+          <li><strong>Optie B:</strong> 3–4 sneden brood/witte broodjes met mager beleg (jam, appelstroop of kipfilet) en glas vruchtensap</li>
+        </ul>
+        <ul style="margin-top:0.8rem;">
+          <li class="no-bullet"><strong>Koffie & Timing</strong></li>
+          <li>Kop koffie is prima voor focus, maar drink er direct een glas water naast</li>
+          <li>Eet minimaal 2 uur voor het inklikken, zodat het verteringswerk gedaan is als de eerste singletrack begint</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="day-card day-sat">
+      <div class="day-header">
+        <h2>🚲 3. Tijdens: Op de Trails</h2>
+        <span class="date">60–90g koolhydraten/uur</span>
+      </div>
+      <div class="day-body">
+        <div class="emoji-title">Direct beginnen met tanken – wacht niet tot je leeg bent!</div>
+        <ul>
+          <li class="no-bullet"><strong>De Eerste Helft (Focus op prestatie)</strong></li>
+          <li>Eigen energierepen, bananen, ontbijtkoek (Snelle Jelle) of sportgels</li>
+          <li>Drink constant kleine slokken uit bidon/Camelbak met isotone sportdrank of elektrolyten</li>
+        </ul>
+        <ul style="margin-top:0.8rem;">
+          <li class="no-bullet"><strong>Bij de Verzorgingsposten</strong></li>
+          <li>✅ <strong>Doen:</strong> Stukjes sinaasappel, banaan, gedroogde vruchten, peperkoek, stokbrood met ham</li>
+          <li>⚠️ <strong>Beperk:</strong> Kaas en vette worst – vallen als een baksteen op je maag tijdens inspanning</li>
+          <li>Je bloed moet naar je spieren, niet naar je maag om zware kaas te verteren!</li>
+          <li>Bewaar de échte kaasplank voor de finish 🧀</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="day-card day-wed">
+      <div class="day-header">
+        <h2>🏁 4. Direct na de Finish</h2>
+        <span class="date">Herstel</span>
+      </div>
+      <div class="day-body">
+        <div class="emoji-title">Spieren zijn leeg – start het herstel!</div>
+        <ul>
+          <li class="no-bullet"><strong>Binnen 30 minuten</strong></li>
+          <li>Herstelshake (eiwitten + koolhydraten) of flinke bak kwark met banaan</li>
+          <li>Dit zet de spierafbraak direct stop en start het herstel voor de overige twee dagen biken</li>
+        </ul>
+        <ul style="margin-top:0.8rem;">
+          <li class="no-bullet"><strong>Daarna</strong></li>
+          <li>Welverdiende burger, pizza of lokale Franse specialiteit 🍕</li>
+          <li>Lekker koud (Heineken) biertje om te vieren dat je de Pass'Portes hebt bedwongen! 🍻</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Packing list data
+    const packingData = {
+      '👕 Kleding Gewoon': [
+        'Trainingsbroek',
+        'Trui met ondershirt',
+        'T-shirt',
+        'Vest',
+        'Jas',
+        'Petje',
+        'Polo',
+        'Lange broek en korte broek',
+        'Sokken',
+        'Ondergoed',
+        'Schoenen',
+        'Zwembroek',
+        'Slippers',
+        'Pyjama',
+        'Zwembroek lang en kort',
+        'Eigen kussen',
+      ],
+      '🧴 Toilettas': [
+        'Toiletrol',
+        'Tandenborstel / tandpasta / waterflos / elastiekjes',
+        '1 Handdoek',
+        'Facewash / exfoliate / night / day',
+        'Gel en douchegel',
+        'Luchtje',
+        'Scheerapparaat',
+        'Elastiekjes + doosje / mini tandenborstel',
+        'Lege waszakken',
+        'Oordoppen',
+      ],
+      '🩹 EHBO': [
+        'Paracetamol',
+        'EHBO kitje fiets + auto',
+        'Pleisters etc.',
+      ],
+      '🚴 Fiets Kleding': [
+        'Sokken 3x',
+        'Zeembroek 3x',
+        'Bump pants 2x',
+        'Korte broek 3x',
+        'Zweetshirt 3x',
+        'Kort shirt 3x',
+        'Lang shirt 3x',
+        'Thermo lang 3x',
+        'Handschoenen 3x',
+        'Regenjas',
+      ],
+      '🛡️ Bescherming & Helm': [
+        'Helm groot',
+        'Harnas',
+        'Kniebeschermers',
+        'Brillen (zon / wit)',
+        'Bril goggles',
+        'Bidon',
+        'Schoenen',
+        'Heuptas',
+      ],
+      '🍫 Fiets Benodigdheden': [
+        'Reepjes',
+        'Koekjes',
+        'Electrolytes',
+        'After work-out',
+        '(Water) / heuptas + EHBO',
+        'Pompje',
+        'Bidon',
+        'Statiefje',
+        'GPS + houder + powerbank + chestmount',
+        'GoPro + batterijen + remote + statief',
+        'MTB slotje',
+      ],
+      '🔧 Fiets Onderdelen / Gereedschap': [
+        'Pomp',
+        'Ketting tools',
+        'Bandenlichters',
+        'OneUp pomp',
+        'Doek / handschoenen',
+        'Momentsleutel',
+        'Imbussleutel',
+        'Schroevendraaier',
+        'Tape / tie-wraps',
+      ],
+      '⚙️ Onderdelen': [
+        'Buitenband',
+        'Derailleurhanger',
+        'Olie / vet',
+        'Tandwielen',
+        'Remblokken',
+        'Quicklink',
+        'Coil',
+      ],
+      '🚗 Fiets Onderweg': [
+        'Fiets',
+        'Fietsendrager',
+        'Fietsbeschermers',
+        'Hangslot',
+        'Spanbanden oranje',
+      ],
+      '📱 Electronica en Overig': [
+        'Muziekdoppen AirPods',
+        'Zonnebril',
+        'Geld contant',
+        'Telefoon',
+        'Opladers',
+        'Kabels / lange USB kabel / horloge kabel',
+        'Raboscanner',
+        'Powerbank',
+        'Eigen kussen',
+        'Schoendrogers',
+      ],
+      '🛣️ Onderweg': [
+        'Koffiecups',
+        'Kopjes',
+        'Chocomelcups',
+        'Zonnebril',
+        'Paspoort',
+        'Contant geld',
+        'Pinpas',
+        'Credit card',
+        'Vignet',
+        'Reserve sleutel / card',
+        'Veiligheidshesje',
+        'Afvalzakjes / handdoekjes',
+        'Eten en drinken (krentenbollen)',
+        'Oplaadkabel USB-C / Lightning',
+        'Bidon water / Red Bull / 1ltr drinken',
+      ],
+    };
+
+    const STORAGE_KEY = 'lesgets2026_packing';
+
+    function loadCheckedState() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+      } catch { return {}; }
+    }
+
+    function saveCheckedState(state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function renderPackingList() {
+      const container = document.getElementById('packing-list');
+      const checked = loadCheckedState();
+      container.innerHTML = '';
+
+      let totalItems = 0;
+      let totalChecked = 0;
+
+      Object.entries(packingData).forEach(([category, items]) => {
+        const catChecked = items.filter((_, i) => checked[`${category}_${i}`]).length;
+        totalItems += items.length;
+        totalChecked += catChecked;
+
+        const section = document.createElement('div');
+        section.className = 'packing-category';
+        section.innerHTML = `
+          <div class="packing-category-header">
+            <span>${category}</span>
+            <span class="progress">${catChecked} / ${items.length}</span>
+          </div>
+          <div class="packing-items">
+            ${items.map((item, i) => {
+              const key = `${category}_${i}`;
+              const isChecked = checked[key] || false;
+              return `
+                <div class="packing-item ${isChecked ? 'checked' : ''}">
+                  <input type="checkbox" id="${key}" ${isChecked ? 'checked' : ''}>
+                  <label for="${key}">${item}</label>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+        container.appendChild(section);
+      });
+
+      // Update overall progress
+      document.getElementById('progress-text').textContent = `${totalChecked} / ${totalItems}`;
+      const pct = totalItems > 0 ? (totalChecked / totalItems * 100) : 0;
+      document.getElementById('progress-fill').style.width = `${pct}%`;
+    }
+
+    // Event delegation for checkboxes
+    document.getElementById('packing-list').addEventListener('change', (e) => {
+      if (e.target.type === 'checkbox') {
+        const state = loadCheckedState();
+        state[e.target.id] = e.target.checked;
+        saveCheckedState(state);
+        renderPackingList();
+      }
+    });
+
+    renderPackingList();
+
+    // Weather forecast from Open-Meteo (free, no API key)
+    async function loadWeather() {
+      const grid = document.getElementById('weather-grid');
+      const tripDays = [
+        { date: '2026-06-24', label: 'Wed 24' },
+        { date: '2026-06-25', label: 'Thu 25' },
+        { date: '2026-06-26', label: 'Fri 26' },
+        { date: '2026-06-27', label: 'Sat 27' },
+        { date: '2026-06-28', label: 'Sun 28' },
+      ];
+
+      const weatherIcons = {
+        0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+        45: '🌫️', 48: '🌫️',
+        51: '🌦️', 53: '🌦️', 55: '🌧️',
+        56: '🌧️', 57: '🌧️',
+        61: '🌧️', 63: '🌧️', 65: '🌧️',
+        66: '🌧️', 67: '🌧️',
+        71: '🌨️', 73: '🌨️', 75: '🌨️', 77: '🌨️',
+        80: '🌦️', 81: '🌧️', 82: '🌧️',
+        85: '🌨️', 86: '🌨️',
+        95: '⛈️', 96: '⛈️', 99: '⛈️',
+      };
+
+      try {
+        const url = 'https://api.open-meteo.com/v1/forecast?latitude=46.1567&longitude=6.6697&hourly=temperature_2m,weathercode,precipitation_probability&timezone=Europe/Paris&start_date=2026-06-24&end_date=2026-06-28';
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (!data.hourly) throw new Error('No data');
+
+        grid.innerHTML = '';
+
+        tripDays.forEach(day => {
+          const dayDiv = document.createElement('div');
+          dayDiv.className = 'weather-day';
+
+          const slots = [
+            { label: 'Morning', hours: [7, 8, 9, 10, 11] },
+            { label: 'Afternoon', hours: [12, 13, 14, 15, 16, 17] },
+            { label: 'Evening', hours: [18, 19, 20, 21, 22] },
+          ];
+
+          let slotsHtml = `<div class="wd-label">${day.label}</div>`;
+
+          slots.forEach(slot => {
+            const indices = slot.hours.map(h => {
+              const dateStr = `${day.date}T${String(h).padStart(2, '0')}:00`;
+              return data.hourly.time.indexOf(dateStr);
+            }).filter(i => i !== -1);
+
+            if (indices.length === 0) {
+              slotsHtml += `<div class="weather-slot"><span class="ws-time">${slot.label}</span><span class="ws-icon">❓</span><span class="ws-temp">--</span></div>`;
+              return;
+            }
+
+            const temps = indices.map(i => data.hourly.temperature_2m[i]);
+            const codes = indices.map(i => data.hourly.weathercode[i]);
+            const rains = indices.map(i => data.hourly.precipitation_probability[i]);
+
+            const avgTemp = Math.round(temps.reduce((a, b) => a + b, 0) / temps.length);
+            const maxRain = Math.max(...rains);
+            const modeCode = codes.sort((a, b) =>
+              codes.filter(v => v === a).length - codes.filter(v => v === b).length
+            ).pop();
+            const icon = weatherIcons[modeCode] || '🌡️';
+
+            slotsHtml += `
+              <div class="weather-slot">
+                <span class="ws-time">${slot.label}</span>
+                <span class="ws-icon">${icon}</span>
+                <span class="ws-temp">${avgTemp}°C</span>
+                <span class="ws-rain">💧 ${maxRain}%</span>
+              </div>`;
+          });
+
+          dayDiv.innerHTML = slotsHtml;
+          grid.appendChild(dayDiv);
+        });
+      } catch (e) {
+        grid.innerHTML = '<div class="weather-loading">⚠️ Weather data not yet available (forecasts show ~7 days ahead). <a href="https://www.mountain-forecast.com/peaks/Les-Gets/forecasts/1172" target="_blank" style="color:white;text-decoration:underline;">Check manually →</a></div>';
+      }
+    }
+
+    // Restaurant map (Leaflet + OpenStreetMap)
+    const restoMap = L.map('resto-map').setView([46.1580, 6.6690], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19,
+    }).addTo(restoMap);
+
+    const restoIcon = L.divIcon({
+      html: '<div style="font-size:1.6rem;text-shadow:1px 1px 2px rgba(0,0,0,0.4);">📍</div>',
+      iconSize: [28, 36],
+      iconAnchor: [14, 36],
+      popupAnchor: [0, -32],
+      className: '',
+    });
+
+    const hotelIcon = L.divIcon({
+      html: '<div style="font-size:1.6rem;text-shadow:1px 1px 2px rgba(0,0,0,0.4);">🏨</div>',
+      iconSize: [28, 36],
+      iconAnchor: [14, 36],
+      popupAnchor: [0, -32],
+      className: '',
+    });
+
+    // Hotel marker
+    L.marker([46.1590, 6.6710], { icon: hotelIcon })
+      .addTo(restoMap)
+      .bindPopup('<strong>🏨 Chamois d\'Or Hotel & Spa</strong><br>Our accommodation')
+      .bindTooltip('Chamois d\'Or', { permanent: true, direction: 'top', offset: [0, -30], className: 'map-label map-label-hotel' });
+
+    const restaurants = [
+      { name: "La R'mize", price: "€25–45", rating: "⭐ 4.8", cuisine: "French / Alpine", lat: 46.1610, lng: 6.6695 },
+      { name: "L'Aprèski Bar & Resto", price: "€20–40", rating: "⭐ 4.6", cuisine: "French + Casual", lat: 46.1575, lng: 6.6660 },
+      { name: "Vina Annapurna", price: "€25–45", rating: "⭐ 4.6", cuisine: "Modern French", lat: 46.1583, lng: 6.6700 },
+      { name: "Brasserie Du Centre", price: "€20–40", rating: "⭐ 4.6", cuisine: "Pizza, Burgers, French", lat: 46.1580, lng: 6.6688 },
+      { name: "Les Durs à Cuire", price: "€25–45", rating: "⭐ 4.6", cuisine: "Burgers, BBQ / Meats", lat: 46.1572, lng: 6.6720 },
+      { name: "Les Copeaux", price: "€25–50", rating: "⭐ 4.5", cuisine: "French, Fondue", lat: 46.1578, lng: 6.6675 },
+      { name: "Le Vaffieu", price: "€25–45", rating: "⭐ 4.5", cuisine: "Alpine Comfort", lat: 46.1555, lng: 6.6650 },
+      { name: "Le Boomerang", price: "€18–35", rating: "⭐ 4.5", cuisine: "Burgers, Casual", lat: 46.1585, lng: 6.6682 },
+      { name: "Le George", price: "€20–40", rating: "⭐ 4.4", cuisine: "French / Wine Bar", lat: 46.1582, lng: 6.6693 },
+      { name: "Pizzalino", price: "€15–30", rating: "⭐ 4.3", cuisine: "Pizza", lat: 46.1581, lng: 6.6685 },
+      { name: "La Biskatcha", price: "€20–48", rating: "⭐ 4.3", cuisine: "BBQ, Grilled Meats", lat: 46.1577, lng: 6.6697 },
+      { name: "L'As des Neiges & Le Comptoir", price: "€20–40", rating: "⭐ 4.2", cuisine: "Pizza, Pasta", lat: 46.1579, lng: 6.6670 },
+      { name: "Le Tyrol", price: "€20–40", rating: "⭐ 4.2", cuisine: "Pizza, Grill", lat: 46.1576, lng: 6.6705 },
+    ];
+
+    restaurants.forEach(r => {
+      L.marker([r.lat, r.lng], { icon: restoIcon })
+        .addTo(restoMap)
+        .bindPopup(`<strong>${r.name}</strong><br>${r.rating}<br>${r.price}`)
+        .bindTooltip(`${r.name}<br><span style="font-size:0.6rem;opacity:0.7;">${r.cuisine}</span>`, { permanent: true, direction: 'top', offset: [0, -30], className: 'map-label' });
+    });
+
+    // Fix map rendering when tab becomes visible
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.tab === 'restaurants') {
+          setTimeout(() => restoMap.invalidateSize(), 100);
+        }
+      });
+    });
+
+    loadWeather();
+  </script>
+</body>
+</html>

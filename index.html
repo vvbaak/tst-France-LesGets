@@ -518,43 +518,109 @@
       top: 0; left: 0; right: 0; bottom: 0;
       background: radial-gradient(ellipse at center, #1a0533 0%, #0d001a 100%);
       z-index: 9999;
-      justify-content: center;
-      align-items: center;
       flex-direction: column;
       text-align: center;
-      padding: 2rem;
+      padding: 0;
       animation: fadeIn 0.5s ease;
+      overflow-y: auto;
     }
     .easter-egg.show { display: flex; }
-    .easter-egg .treasure { font-size: 5rem; margin-bottom: 1rem; animation: bounce 1s infinite; }
-    .easter-egg h2 {
-      font-size: 2rem;
+    .egg-header {
+      padding: 1.5rem 1rem 1rem;
+      position: sticky;
+      top: 0;
+      background: rgba(13,0,26,0.95);
+      backdrop-filter: blur(8px);
+      z-index: 2;
+      border-bottom: 1px solid rgba(255,215,0,0.2);
+    }
+    .egg-header .treasure { font-size: 2.5rem; animation: bounce 1.5s infinite; display: inline-block; }
+    .egg-header h2 {
+      font-size: 1.4rem;
       color: #ffd700;
       text-shadow: 0 0 20px rgba(255,215,0,0.5);
-      margin-bottom: 0.5rem;
+      margin: 0.3rem 0 0.2rem;
     }
-    .easter-egg p {
-      color: rgba(255,255,255,0.8);
-      font-size: 1.1rem;
-      max-width: 400px;
-      line-height: 1.6;
-    }
-    .easter-egg .close-egg {
-      margin-top: 2rem;
-      background: rgba(255,215,0,0.2);
-      border: 2px solid #ffd700;
+    .egg-header p { color: rgba(255,255,255,0.6); font-size: 0.85rem; margin: 0; }
+    .egg-header .close-egg {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255,215,0,0.15);
+      border: 1px solid rgba(255,215,0,0.4);
       color: #ffd700;
-      padding: 0.6rem 1.5rem;
-      border-radius: 25px;
-      font-family: 'Outfit', sans-serif;
-      font-size: 1rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.2rem;
       cursor: pointer;
-      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
     }
-    .easter-egg .close-egg:hover { background: rgba(255,215,0,0.4); }
+    .egg-header .close-egg:hover { background: rgba(255,215,0,0.3); }
+    .egg-content { padding: 1rem; max-width: 700px; margin: 0 auto; width: 100%; }
+    .trans-section {
+      margin-bottom: 1rem;
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .trans-section-header {
+      padding: 0.7rem 1rem;
+      background: rgba(255,215,0,0.1);
+      color: #ffd700;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+    .trans-section-header:hover { background: rgba(255,215,0,0.18); }
+    .trans-section-header .chevron { transition: transform 0.3s; font-size: 0.8rem; }
+    .trans-section.open .chevron { transform: rotate(90deg); }
+    .trans-section-body { display: none; }
+    .trans-section.open .trans-section-body { display: block; }
+    .trans-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.82rem;
+      gap: 0.5rem;
+    }
+    .trans-row:last-child { border-bottom: none; }
+    .trans-row.header-row {
+      color: rgba(255,215,0,0.7);
+      font-weight: 600;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding-top: 0.7rem;
+      position: sticky;
+      top: 0;
+      background: rgba(13,0,26,0.9);
+    }
+    .trans-nl { color: rgba(255,255,255,0.9); }
+    .trans-fr { color: #81d4fa; font-weight: 500; }
+    .trans-pr { color: rgba(255,255,255,0.45); font-style: italic; font-size: 0.78rem; }
+    /* Numbers grid: 4 cols */
+    .trans-row.num-row {
+      grid-template-columns: 50px 1fr 1fr 1fr;
+    }
+    .num-val { color: #ffd700; font-weight: 600; }
+    @media (max-width: 480px) {
+      .trans-row { font-size: 0.75rem; gap: 0.3rem; padding: 0.45rem 0.7rem; }
+      .trans-pr { font-size: 0.7rem; }
+      .egg-header h2 { font-size: 1.2rem; }
+    }
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-15px); }
+      50% { transform: translateY(-8px); }
     }
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -1151,12 +1217,168 @@
 
   </div>
 
-  <!-- Easter Egg -->
+  <!-- Easter Egg: Translation Guide -->
   <div class="easter-egg" id="easter-egg">
-    <div class="treasure">🏆</div>
-    <h2>You Found the Hidden Treasure!</h2>
-    <p>Congrats legend! 🎉<br>May your trails be flowy, your brakes be sharp, and your beers be cold in Les Gets. 🚵‍♂️🍻</p>
-    <button class="close-egg" onclick="document.getElementById('easter-egg').classList.remove('show')">Back to the trip →</button>
+    <div class="egg-header">
+      <button class="close-egg" onclick="document.getElementById('easter-egg').classList.remove('show')">✕</button>
+      <span class="treasure">🏆</span>
+      <h2>Hidden Treasure: Frans voor Dummies</h2>
+      <p>Handige vertalingen Nederlands → Frans</p>
+    </div>
+    <div class="egg-content">
+
+      <!-- 1. Begroeten -->
+      <div class="trans-section open">
+        <div class="trans-section-header" onclick="this.parentElement.classList.toggle('open')">
+          <span>👋 1. Begroeten & Basis</span>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="trans-section-body">
+          <div class="trans-row header-row"><span>Nederlands</span><span>Frans</span><span>Uitspraak</span></div>
+          <div class="trans-row"><span class="trans-nl">Hallo / Goedendag</span><span class="trans-fr">Bonjour</span><span class="trans-pr">[Bong-zjoer]</span></div>
+          <div class="trans-row"><span class="trans-nl">Goedenavond</span><span class="trans-fr">Bonsoir</span><span class="trans-pr">[Bong-swahr]</span></div>
+          <div class="trans-row"><span class="trans-nl">Alstublieft</span><span class="trans-fr">S'il vous plaît</span><span class="trans-pr">[Siel-woe-plee]</span></div>
+          <div class="trans-row"><span class="trans-nl">Bedankt</span><span class="trans-fr">Merci</span><span class="trans-pr">[Mer-sie]</span></div>
+          <div class="trans-row"><span class="trans-nl">Neem me niet kwalijk</span><span class="trans-fr">Excusez-moi</span><span class="trans-pr">[Ex-kuu-zee-mwa]</span></div>
+          <div class="trans-row"><span class="trans-nl">Spreekt u Engels?</span><span class="trans-fr">Parlez-vous anglais?</span><span class="trans-pr">[Par-lee-woe-ang-lee?]</span></div>
+          <div class="trans-row"><span class="trans-nl">Tegen een man</span><span class="trans-fr">Bonjour Monsieur</span><span class="trans-pr">[Bong-zjoer muh-sjeu]</span></div>
+          <div class="trans-row"><span class="trans-nl">Tegen een vrouw</span><span class="trans-fr">Bonjour Madame</span><span class="trans-pr">[Bong-zjoer mah-dahm]</span></div>
+        </div>
+      </div>
+
+      <!-- 2. Restaurant -->
+      <div class="trans-section">
+        <div class="trans-section-header" onclick="this.parentElement.classList.toggle('open')">
+          <span>🍽️ 2. Restaurant & Bestellen</span>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="trans-section-body">
+          <div class="trans-row header-row"><span>Nederlands</span><span>Frans</span><span>Uitspraak</span></div>
+          <div class="trans-row"><span class="trans-nl">Een tafel voor... personen</span><span class="trans-fr">Une table pour... personnes</span><span class="trans-pr">[Uun tah-ble poer... per-son]</span></div>
+          <div class="trans-row"><span class="trans-nl">Ik zou graag... willen</span><span class="trans-fr">Je voudrais...</span><span class="trans-pr">[Sje woe-dree...]</span></div>
+          <div class="trans-row"><span class="trans-nl">Een karaf water, a.u.b.</span><span class="trans-fr">Une carafe d'eau, s.v.p.</span><span class="trans-pr">[Uun kah-raf doh, siel-woe-plee]</span></div>
+          <div class="trans-row"><span class="trans-nl">De rekening, a.u.b.</span><span class="trans-fr">L'addition, s'il vous plaît</span><span class="trans-pr">[Lah-die-sie-ong, siel-woe-plee]</span></div>
+          <div class="trans-row"><span class="trans-nl">Waar zijn de toiletten?</span><span class="trans-fr">Où sont les toilettes?</span><span class="trans-pr">[Oe song lee twah-let?]</span></div>
+        </div>
+      </div>
+
+      <!-- 3. Levensmiddelen -->
+      <div class="trans-section">
+        <div class="trans-section-header" onclick="this.parentElement.classList.toggle('open')">
+          <span>🥐 3. Levensmiddelen & Ontbijt</span>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="trans-section-body">
+          <div class="trans-row header-row"><span>Nederlands</span><span>Frans</span><span>Uitspraak</span></div>
+          <div class="trans-row"><span class="trans-nl">Een croissant</span><span class="trans-fr">Un croissant</span><span class="trans-pr">[Uh krwah-sang]</span></div>
+          <div class="trans-row"><span class="trans-nl">Een stokbrood</span><span class="trans-fr">Une baguette</span><span class="trans-pr">[Uun bah-get]</span></div>
+          <div class="trans-row"><span class="trans-nl">Brood</span><span class="trans-fr">Du pain</span><span class="trans-pr">[Du peh]</span></div>
+          <div class="trans-row"><span class="trans-nl">Broodjes (kleine)</span><span class="trans-fr">Des petits pains</span><span class="trans-pr">[Dee p'tie peh]</span></div>
+          <div class="trans-row"><span class="trans-nl">Een ei / Eieren</span><span class="trans-fr">Un œuf / Des œufs</span><span class="trans-pr">[Uh nuf / Dee zeu]</span></div>
+          <div class="trans-row"><span class="trans-nl">Boter</span><span class="trans-fr">Du beurre</span><span class="trans-pr">[Du beur]</span></div>
+          <div class="trans-row"><span class="trans-nl">Kaas</span><span class="trans-fr">Du fromage</span><span class="trans-pr">[Du froh-mahzj]</span></div>
+          <div class="trans-row"><span class="trans-nl">Ham</span><span class="trans-fr">Du jambon</span><span class="trans-pr">[Du zjang-bong]</span></div>
+          <div class="trans-row"><span class="trans-nl">Kipfilet (beleg)</span><span class="trans-fr">Du blanc de poulet</span><span class="trans-pr">[Du blang de poe-lee]</span></div>
+          <div class="trans-row"><span class="trans-nl">Jam</span><span class="trans-fr">De la confiture</span><span class="trans-pr">[De lah kong-fie-tuur]</span></div>
+          <div class="trans-row"><span class="trans-nl">Melk</span><span class="trans-fr">Du lait</span><span class="trans-pr">[Du lee]</span></div>
+          <div class="trans-row"><span class="trans-nl">Koffie / Thee</span><span class="trans-fr">Du café / Du thé</span><span class="trans-pr">[Du kah-fee / Du tee]</span></div>
+          <div class="trans-row"><span class="trans-nl">Water (plat / bruis)</span><span class="trans-fr">De l'eau (plate / gazeuse)</span><span class="trans-pr">[De loh (plat / gah-zeuz)]</span></div>
+        </div>
+      </div>
+
+      <!-- 4. Betalen -->
+      <div class="trans-section">
+        <div class="trans-section-header" onclick="this.parentElement.classList.toggle('open')">
+          <span>💳 4. Betalen & Winkelen</span>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="trans-section-body">
+          <div class="trans-row header-row"><span>Nederlands</span><span>Frans</span><span>Uitspraak</span></div>
+          <div class="trans-row"><span class="trans-nl">Kan ik met kaart betalen?</span><span class="trans-fr">Je peux payer par carte?</span><span class="trans-pr">[Sje peu pee-jee par kart?]</span></div>
+          <div class="trans-row"><span class="trans-nl">Alleen contant geld</span><span class="trans-fr">Espèces uniquement</span><span class="trans-pr">[Es-pess uu-niek-mang]</span></div>
+          <div class="trans-row"><span class="trans-nl">Tasje erbij?</span><span class="trans-fr">Un sac?</span><span class="trans-pr">[Uh sak?]</span></div>
+          <div class="trans-row"><span class="trans-nl">Open / Gesloten</span><span class="trans-fr">Ouvert / Fermé</span><span class="trans-pr">[Oe-ver / Fer-mee]</span></div>
+        </div>
+      </div>
+
+      <!-- 5. Vervoer -->
+      <div class="trans-section">
+        <div class="trans-section-header" onclick="this.parentElement.classList.toggle('open')">
+          <span>🚗 5. Vervoer, Auto & Onderweg</span>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="trans-section-body">
+          <div class="trans-row header-row"><span>Nederlands</span><span>Frans</span><span>Uitspraak</span></div>
+          <div class="trans-row"><span class="trans-nl">Mijn auto heeft pech</span><span class="trans-fr">Ma voiture est en panne</span><span class="trans-pr">[Mah vwah-tuur eet ang pan]</span></div>
+          <div class="trans-row"><span class="trans-nl">Waar is het tankstation?</span><span class="trans-fr">Où est la station-service?</span><span class="trans-pr">[Oe ee lah stah-sie-ong-ser-vies?]</span></div>
+          <div class="trans-row"><span class="trans-nl">Benzine (E10/E5)</span><span class="trans-fr">Essence (Sans plomb)</span><span class="trans-pr">[Es-sangs (Sang plong)]</span></div>
+          <div class="trans-row"><span class="trans-nl">Diesel</span><span class="trans-fr">Gazole / Diesel</span><span class="trans-pr">[Gah-zol / Die-zel]</span></div>
+          <div class="trans-row"><span class="trans-nl">Tolweg / Tolstation</span><span class="trans-fr">Péage</span><span class="trans-pr">[Pee-ahzje]</span></div>
+          <div class="trans-row"><span class="trans-nl">Parkeerautomaat</span><span class="trans-fr">Horodateur</span><span class="trans-pr">[Oh-roh-dah-teur]</span></div>
+          <div class="trans-row"><span class="trans-nl">Waar is het station?</span><span class="trans-fr">Où est la gare?</span><span class="trans-pr">[Oe ee lah gahr?]</span></div>
+          <div class="trans-row"><span class="trans-nl">Een kaartje naar..., a.u.b.</span><span class="trans-fr">Un billet pour..., s.v.p.</span><span class="trans-pr">[Uh bie-jee poer..., siel-woe-plee]</span></div>
+          <div class="trans-row"><span class="trans-nl">Uitrit / Vol</span><span class="trans-fr">Sortie / Complet</span><span class="trans-pr">[Sor-tie / Kong-plee]</span></div>
+        </div>
+      </div>
+
+      <!-- 6. Noodgeval -->
+      <div class="trans-section">
+        <div class="trans-section-header" onclick="this.parentElement.classList.toggle('open')">
+          <span>🚨 6. Noodgeval & Lichaam</span>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="trans-section-body">
+          <div class="trans-row header-row"><span>Nederlands</span><span>Frans</span><span>Uitspraak</span></div>
+          <div class="trans-row"><span class="trans-nl">Help mij, alstublieft</span><span class="trans-fr">Aidez-moi, s'il vous plaît</span><span class="trans-pr">[Ee-dee-mwa, siel-woe-plee]</span></div>
+          <div class="trans-row"><span class="trans-nl">Bel een ambulance</span><span class="trans-fr">Appelez une ambulance</span><span class="trans-pr">[Ah-plee uun am-bu-lans]</span></div>
+          <div class="trans-row"><span class="trans-nl">Bel de politie</span><span class="trans-fr">Appelez la police</span><span class="trans-pr">[Ah-plee lah po-lies]</span></div>
+          <div class="trans-row"><span class="trans-nl">Waar is het ziekenhuis?</span><span class="trans-fr">Où est l'hôpital?</span><span class="trans-pr">[Oe ee loh-pie-tal?]</span></div>
+          <div class="trans-row"><span class="trans-nl">Het hoofd / De arm</span><span class="trans-fr">La tête / Le bras</span><span class="trans-pr">[Lah tet / Le brah]</span></div>
+          <div class="trans-row"><span class="trans-nl">Het been / De rug</span><span class="trans-fr">La jambe / Le dos</span><span class="trans-pr">[Lah zjangb / Le doh]</span></div>
+        </div>
+      </div>
+
+      <!-- 7. Getallen -->
+      <div class="trans-section">
+        <div class="trans-section-header" onclick="this.parentElement.classList.toggle('open')">
+          <span>🔢 7. Getallen (Les Nombres)</span>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="trans-section-body">
+          <div class="trans-row header-row"><span>Nederlands</span><span>Frans</span><span>Uitspraak</span></div>
+          <div class="trans-row"><span class="trans-nl">1</span><span class="trans-fr">Un / Une</span><span class="trans-pr">[Uh / Uun]</span></div>
+          <div class="trans-row"><span class="trans-nl">2</span><span class="trans-fr">Deux</span><span class="trans-pr">[Deu]</span></div>
+          <div class="trans-row"><span class="trans-nl">3</span><span class="trans-fr">Trois</span><span class="trans-pr">[Trwa]</span></div>
+          <div class="trans-row"><span class="trans-nl">4</span><span class="trans-fr">Quatre</span><span class="trans-pr">[Katr]</span></div>
+          <div class="trans-row"><span class="trans-nl">5</span><span class="trans-fr">Cinq</span><span class="trans-pr">[Sank]</span></div>
+          <div class="trans-row"><span class="trans-nl">6</span><span class="trans-fr">Six</span><span class="trans-pr">[Sies]</span></div>
+          <div class="trans-row"><span class="trans-nl">7</span><span class="trans-fr">Sept</span><span class="trans-pr">[Set]</span></div>
+          <div class="trans-row"><span class="trans-nl">8</span><span class="trans-fr">Huit</span><span class="trans-pr">[Wiet]</span></div>
+          <div class="trans-row"><span class="trans-nl">9</span><span class="trans-fr">Neuf</span><span class="trans-pr">[Nef]</span></div>
+          <div class="trans-row"><span class="trans-nl">10</span><span class="trans-fr">Dix</span><span class="trans-pr">[Dies]</span></div>
+          <div class="trans-row"><span class="trans-nl">11</span><span class="trans-fr">Onze</span><span class="trans-pr">[Onz]</span></div>
+          <div class="trans-row"><span class="trans-nl">12</span><span class="trans-fr">Douze</span><span class="trans-pr">[Doez]</span></div>
+          <div class="trans-row"><span class="trans-nl">13</span><span class="trans-fr">Treize</span><span class="trans-pr">[Trezz]</span></div>
+          <div class="trans-row"><span class="trans-nl">14</span><span class="trans-fr">Quatorze</span><span class="trans-pr">[Kah-torz]</span></div>
+          <div class="trans-row"><span class="trans-nl">15</span><span class="trans-fr">Quinze</span><span class="trans-pr">[Kehnz]</span></div>
+          <div class="trans-row"><span class="trans-nl">16</span><span class="trans-fr">Seize</span><span class="trans-pr">[Sezz]</span></div>
+          <div class="trans-row"><span class="trans-nl">17</span><span class="trans-fr">Dix-sept</span><span class="trans-pr">[Dies-set]</span></div>
+          <div class="trans-row"><span class="trans-nl">18</span><span class="trans-fr">Dix-huit</span><span class="trans-pr">[Dies-wiet]</span></div>
+          <div class="trans-row"><span class="trans-nl">19</span><span class="trans-fr">Dix-neuf</span><span class="trans-pr">[Dies-nef]</span></div>
+          <div class="trans-row"><span class="trans-nl">20</span><span class="trans-fr">Vingt</span><span class="trans-pr">[Veh]</span></div>
+          <div class="trans-row"><span class="trans-nl">30</span><span class="trans-fr">Trente</span><span class="trans-pr">[Trangt]</span></div>
+          <div class="trans-row"><span class="trans-nl">40</span><span class="trans-fr">Quarante</span><span class="trans-pr">[Kah-rangt]</span></div>
+          <div class="trans-row"><span class="trans-nl">50</span><span class="trans-fr">Cinquante</span><span class="trans-pr">[Sehn-kangt]</span></div>
+          <div class="trans-row"><span class="trans-nl">60</span><span class="trans-fr">Soixante</span><span class="trans-pr">[Swah-sangt]</span></div>
+          <div class="trans-row"><span class="trans-nl">70</span><span class="trans-fr">Soixante-dix</span><span class="trans-pr">[Swah-sangt-dies]</span></div>
+          <div class="trans-row"><span class="trans-nl">80</span><span class="trans-fr">Quatre-vingts</span><span class="trans-pr">[Katr-veh]</span></div>
+          <div class="trans-row"><span class="trans-nl">90</span><span class="trans-fr">Quatre-vingt-dix</span><span class="trans-pr">[Katr-veh-dies]</span></div>
+          <div class="trans-row"><span class="trans-nl">100</span><span class="trans-fr">Cent</span><span class="trans-pr">[Sang]</span></div>
+        </div>
+      </div>
+
+      <p style="color:rgba(255,255,255,0.3); font-size:0.75rem; margin-top:1rem; padding-bottom:2rem;">Bonne chance et bonne route! 🚵‍♂️🇫🇷</p>
+    </div>
   </div>
 
   <script>

@@ -510,13 +510,63 @@
       border-color: var(--forest);
       font-weight: 600;
     }
+
+    /* Easter egg overlay */
+    .easter-egg {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at center, #1a0533 0%, #0d001a 100%);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 2rem;
+      animation: fadeIn 0.5s ease;
+    }
+    .easter-egg.show { display: flex; }
+    .easter-egg .treasure { font-size: 5rem; margin-bottom: 1rem; animation: bounce 1s infinite; }
+    .easter-egg h2 {
+      font-size: 2rem;
+      color: #ffd700;
+      text-shadow: 0 0 20px rgba(255,215,0,0.5);
+      margin-bottom: 0.5rem;
+    }
+    .easter-egg p {
+      color: rgba(255,255,255,0.8);
+      font-size: 1.1rem;
+      max-width: 400px;
+      line-height: 1.6;
+    }
+    .easter-egg .close-egg {
+      margin-top: 2rem;
+      background: rgba(255,215,0,0.2);
+      border: 2px solid #ffd700;
+      color: #ffd700;
+      padding: 0.6rem 1.5rem;
+      border-radius: 25px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .easter-egg .close-egg:hover { background: rgba(255,215,0,0.4); }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
   </style>
 </head>
 <body>
 
   <!-- Hero -->
   <div class="hero">
-    <h1>🚵 Les Gets 2026</h1>
+    <h1 id="hero-title">🚵 Les Gets 2026</h1>
     <p class="subtitle">Mountain Bike Trip – France</p>
     <div class="dates">📅 Wed 24 June – Sun 28 June</div>
   </div>
@@ -1101,7 +1151,30 @@
 
   </div>
 
+  <!-- Easter Egg -->
+  <div class="easter-egg" id="easter-egg">
+    <div class="treasure">🏆</div>
+    <h2>You Found the Hidden Treasure!</h2>
+    <p>Congrats legend! 🎉<br>May your trails be flowy, your brakes be sharp, and your beers be cold in Les Gets. 🚵‍♂️🍻</p>
+    <button class="close-egg" onclick="document.getElementById('easter-egg').classList.remove('show')">Back to the trip →</button>
+  </div>
+
   <script>
+    // Easter egg: triple tap on title
+    (function() {
+      let tapCount = 0;
+      let tapTimer = null;
+      document.getElementById('hero-title').addEventListener('click', () => {
+        tapCount++;
+        if (tapTimer) clearTimeout(tapTimer);
+        if (tapCount >= 3) {
+          tapCount = 0;
+          document.getElementById('easter-egg').classList.add('show');
+        }
+        tapTimer = setTimeout(() => { tapCount = 0; }, 600);
+      });
+    })();
+
     // Tab switching
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
